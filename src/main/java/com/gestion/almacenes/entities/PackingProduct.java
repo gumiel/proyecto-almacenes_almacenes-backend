@@ -1,5 +1,6 @@
 package com.gestion.almacenes.entities;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 import lombok.Getter;
@@ -11,6 +12,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Entity
 @Table(name= "packing_product" )
+@Schema( name = "Entity PackingProduct (Producto empacado)")
 public class PackingProduct extends Auditable {
 
   @Id

@@ -10,6 +10,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
+@Schema( name = "DTO StockDto (DTO Stock de producto)")
 public class StockDto {
 
   @NotNull

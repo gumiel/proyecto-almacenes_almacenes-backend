@@ -1,5 +1,7 @@
 package com.gestion.almacenes.entities;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -17,6 +19,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Entity
 @Table(name = "storehouse")
+@Schema( name = "Entity Storehouse (Almacen)")
 public class Storehouse extends Auditable {
 
   @Id

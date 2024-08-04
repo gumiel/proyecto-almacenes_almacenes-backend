@@ -11,6 +11,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
+@Schema( name = "DTO UnitMeasurementDto (DTO Unidad de medida)")
 public class UnitMeasurementDto {
 
   @NotNull(message = "{field} Código de la unidad de medida {is.required}")

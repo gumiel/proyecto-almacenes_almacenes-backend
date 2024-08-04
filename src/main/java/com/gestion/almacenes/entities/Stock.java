@@ -1,5 +1,6 @@
 package com.gestion.almacenes.entities;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -19,6 +20,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Entity
 @Table(name = "stock")
+@Schema( name = "Entity Stock (Stock de producto)")
 @Builder
 @AllArgsConstructor
 public class Stock extends Auditable {

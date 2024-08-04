@@ -12,6 +12,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
+@Schema( name = "DTO OrderProductDto (DTO Orden)")
 public class OrderProductDto {
 
   private Integer OrderProductId;

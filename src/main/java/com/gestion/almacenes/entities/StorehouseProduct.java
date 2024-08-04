@@ -1,5 +1,6 @@
 package com.gestion.almacenes.entities;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -16,6 +17,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Entity
 @Table(name = "storehouse_product")
+@Schema( name = "Entity StorehouseProduct (Productos por almacen)")
 public class StorehouseProduct extends Auditable {
 
   @Id

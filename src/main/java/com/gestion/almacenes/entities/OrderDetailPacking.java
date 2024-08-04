@@ -1,5 +1,6 @@
 package com.gestion.almacenes.entities;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -18,6 +19,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Entity
 @Table(name = "order_detail_packing")
+@Schema( name = "Entity OrderDetailPacking (Detalle de Orden con Empaque)")
 public class OrderDetailPacking extends Auditable {
 
   @Id

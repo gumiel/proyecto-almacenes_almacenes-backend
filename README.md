@@ -1,4 +1,4 @@
-# Instalacion 
+git s# Instalacion 
 Programas necesarios.  
 - Java 17 instalado en la maquina  
 - Postgres 15 o superiores instalado  

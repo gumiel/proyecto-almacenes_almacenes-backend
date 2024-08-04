@@ -11,6 +11,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
+@Schema( name = "DTO ConfigDto (DTO Configuraciones)")
 public class ConfigDto {
 
   @NotNull(message = "{field} Código {is.required}")

@@ -12,6 +12,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
+@Schema( name = "DTO ProductDto (DTO Producto)")
 public class ProductDto {
 
   @ValidCode

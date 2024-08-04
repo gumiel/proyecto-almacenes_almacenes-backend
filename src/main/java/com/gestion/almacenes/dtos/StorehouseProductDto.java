@@ -9,6 +9,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
+@Schema( name = "DTO StorehouseProductDto (DTO Productos por almacen)")
 public class StorehouseProductDto {
 
   @NotNull(message = "{field} Idetinficador de Almacen {is.required}")

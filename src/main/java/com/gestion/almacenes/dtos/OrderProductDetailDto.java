@@ -11,6 +11,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
+@Schema( name = "DTO OrderProductDetailDto (DTO Detalle de Orden)")
 public class OrderProductDetailDto {
 
   @Schema(description = "Relacionador que identifica el stock.")

@@ -10,6 +10,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
+@Schema( name = "DTO OrderDetailPackingDto (DTO Detalle de Orden con Empaque)")
 public class OrderDetailPackingDto {
 
   @Schema(description = "Codigo del empaque que tienen los productos.")
