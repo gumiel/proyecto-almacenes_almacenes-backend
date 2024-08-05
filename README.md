@@ -19,9 +19,10 @@ http://server:port/context-path/v1/resource/action/slug?parameter=150
 #### Modelo de base de datos  
 ![Base de datos](https://res.cloudinary.com/daid2fusr/image/upload/fl_preserve_transparency/v1722827888/gestion_almacenes_-_public_lildwy.jpg)
 #### Modelo trabajo  
-Esquema general de despliegues 
+Esquema general de despliegues  
 ![Esquema_de_despliegue](https://res.cloudinary.com/daid2fusr/image/upload/fl_preserve_transparency/v1722830256/Estructura_de_despliegue_almacenes-Esquema_de_despliegue.drawio_nmsf3x.jpg)
-Esquema de trabajo personalizado con Gitflow
+
+Esquema de trabajo personalizado con Gitflow  
 ![Esquema_gitflow](https://res.cloudinary.com/daid2fusr/image/upload/fl_preserve_transparency/v1722830259/Estructura_de_despliegue_almacenes-Esquema_gitflow.drawio_hflekf.jpg)
 
 #### Aprendizaje
