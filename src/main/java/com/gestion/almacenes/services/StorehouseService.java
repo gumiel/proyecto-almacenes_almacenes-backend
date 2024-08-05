@@ -17,6 +17,8 @@ public interface StorehouseService {
 
   Storehouse getById(Integer id);
 
+  Storehouse getByCode(String code);
+
   void delete(Integer id);
 
   List<Storehouse> search(String code, String name);

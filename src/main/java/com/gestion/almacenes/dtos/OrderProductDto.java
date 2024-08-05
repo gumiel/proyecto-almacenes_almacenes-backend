@@ -19,7 +19,7 @@ public class OrderProductDto {
 
   @Size(max = 30, message = "{field} Código {cannot.have.more.than} 30 {characters}")
   @Schema(description = "Codigo de la orden que puede ser generado automaticamente o manualmente.")
-  private String orderCode;
+  private String code;
 
   @Schema(description = "Fecha de registro de la orden.")
   private LocalDate registrationDate;

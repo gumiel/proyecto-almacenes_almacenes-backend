@@ -10,7 +10,6 @@ import com.gestion.almacenes.entities.Config;
 import com.gestion.almacenes.mappers.ConfigMapper;
 import com.gestion.almacenes.repositories.ConfigRepository;
 import com.gestion.almacenes.services.ConfigService;
-import java.util.List;
 import lombok.AllArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
@@ -18,6 +17,10 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+import static com.gestion.almacenes.servicesImpls.ExceptionsCustom.errorEntityNotFound;
 
 @Service
 @AllArgsConstructor
@@ -60,6 +63,14 @@ public class ConfigServiceImpl implements
     return this.findConfigById(id);
   }
 
+  @Cacheable(value = CacheConfig.USER_INFO_CACHE, unless = "#result == null")
+  @Override
+  public Config getByCode(String code) {
+    return configRepository.findByCodeAndActiveTrue(code).orElseThrow(
+      errorEntityNotFound(Config.class, "code", code)
+    );
+  }
+
   @Override
   public void delete(Integer id) {
     Config config = this.findConfigById(id);
@@ -70,6 +81,8 @@ public class ConfigServiceImpl implements
       throw new AlreadyDeletedException("Config", config.getId());
     }
   }
+
+
 
   @Override
   public List<Config> getFiltered(String code, String name) {
@@ -91,14 +104,6 @@ public class ConfigServiceImpl implements
   private Config findConfigById(Integer id) {
     return configRepository.findByIdAndActiveIsTrue(id).orElseThrow(
         () -> new EntityNotFound("Config", id)
-    );
-  }
-
-  @Cacheable(value = CacheConfig.USER_INFO_CACHE, unless = "#result == null")
-  @Override
-  public String getValueByCode(String code) {
-    return configRepository.getValueByCode(code).orElseThrow(
-        () -> new EntityNotFound(Config.class.getSimpleName(), "Codigo", code)
     );
   }
 

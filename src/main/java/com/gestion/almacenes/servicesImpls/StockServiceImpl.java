@@ -9,7 +9,7 @@ import com.gestion.almacenes.entities.Stock;
 import com.gestion.almacenes.entities.Storehouse;
 import com.gestion.almacenes.repositories.ProductRepository;
 import com.gestion.almacenes.repositories.StockRepository;
-import com.gestion.almacenes.repositories.StoreHouseRepository;
+import com.gestion.almacenes.repositories.StorehouseRepository;
 import com.gestion.almacenes.services.StockService;
 import java.util.List;
 import lombok.AllArgsConstructor;
@@ -26,7 +26,7 @@ public class StockServiceImpl implements
 
   private final StockRepository stockRepository;
   private final GenericMapper<Stock, StockDto> genericMapper = new GenericMapper<>(Stock.class);
-  private final StoreHouseRepository storeHouseRepository;
+  private final StorehouseRepository storeHouseRepository;
   private final ProductRepository productRepository;
 
   @Override

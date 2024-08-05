@@ -26,21 +26,21 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/storehouse")
 @Tag(name = "Gestión de Almacenes (StoreHouseController)")
-public class StoreHouseController {
+public class StorehouseController {
 
-  private final StorehouseService storeHouseService;
+  private final StorehouseService storehouseService;
 
   @GetMapping
   @Operation(summary = "Obtener todos los registros")
   public ResponseEntity<List<Storehouse>> getAll() {
-    List<Storehouse> storeHouses = storeHouseService.getAll();
+    List<Storehouse> storeHouses = storehouseService.getAll();
     return ResponseEntity.status(HttpStatus.OK).body(storeHouses);
   }
 
   @PostMapping
   @Operation(summary = "Creación del registro")
   public ResponseEntity<Storehouse> create(@Valid @RequestBody StoreHouseDto dto) {
-    Storehouse storeHouseSaved = storeHouseService.create(dto);
+    Storehouse storeHouseSaved = storehouseService.create(dto);
     return ResponseEntity.status(HttpStatus.CREATED).body(storeHouseSaved);
   }
 
@@ -48,21 +48,28 @@ public class StoreHouseController {
   @Operation(summary = "Edición del registro")
   public ResponseEntity<Storehouse> update(@PathVariable Integer id,
       @Valid @RequestBody StoreHouseDto dto) {
-    Storehouse storeHouseUpdated = storeHouseService.update(id, dto);
+    Storehouse storeHouseUpdated = storehouseService.update(id, dto);
     return ResponseEntity.status(HttpStatus.CREATED).body(storeHouseUpdated);
   }
 
   @GetMapping("/{id}")
   @Operation(summary = "Obtención de los datos del registro por el identificador")
   public ResponseEntity<Storehouse> getById(@PathVariable Integer id) {
-    Storehouse storeHouse = storeHouseService.getById(id);
+    Storehouse storeHouse = storehouseService.getById(id);
     return ResponseEntity.status(HttpStatus.OK).body(storeHouse);
+  }
+  
+  @Operation(summary = "Obtención de los datos del registro por el código identificador")
+  @GetMapping("/{code}")
+  public ResponseEntity<Storehouse> getById(@PathVariable String code) {
+      Storehouse storehouse = storehouseService.getByCode(code);
+      return ResponseEntity.status(HttpStatus.OK).body(storehouse);
   }
 
   @DeleteMapping("/{id}")
   @Operation(summary = "Eliminación del registro por el identificador")
   public ResponseEntity<Void> delete(@PathVariable Integer id) {
-    storeHouseService.delete(id);
+    storehouseService.delete(id);
     return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
   }
 
@@ -71,7 +78,7 @@ public class StoreHouseController {
   public ResponseEntity<List<Storehouse>> search(
       @RequestParam(required = false) String code,
       @RequestParam(required = false) String name) {
-    List<Storehouse> storeHouseListFiltered = storeHouseService.search(code, name);
+    List<Storehouse> storeHouseListFiltered = storehouseService.search(code, name);
 
     return ResponseEntity.status(HttpStatus.OK).body(storeHouseListFiltered);
   }
@@ -86,7 +93,7 @@ public class StoreHouseController {
       @RequestParam(required = false) String code,
       @RequestParam(required = false) String name
   ) {
-    PagePojo<Storehouse> storeHousePagePojoFiltered = storeHouseService.pageable(page, size,
+    PagePojo<Storehouse> storeHousePagePojoFiltered = storehouseService.pageable(page, size,
         sortField, sortOrder, code, name);
 
     return ResponseEntity.status(HttpStatus.OK).body(storeHousePagePojoFiltered);
@@ -96,7 +103,7 @@ public class StoreHouseController {
   @PostMapping("/addProductToStorehouse")
   public ResponseEntity<Storehouse> addProductToStorehouse(
       @Valid @RequestBody StorehouseProductDto dto) {
-    Storehouse storehouseSaved = storeHouseService.addProductToStorehouse(dto);
+    Storehouse storehouseSaved = storehouseService.addProductToStorehouse(dto);
     return ResponseEntity.status(HttpStatus.CREATED).body(storehouseSaved);
   }
 
@@ -104,7 +111,7 @@ public class StoreHouseController {
   @DeleteMapping("/removeProductToStorehouse")
   public ResponseEntity<Storehouse> removeProductToStorehouse(
       @Valid @RequestBody StorehouseProductDto dto) {
-    storeHouseService.removeProductToStorehouse(dto);
+    storehouseService.removeProductToStorehouse(dto);
     return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
   }
 

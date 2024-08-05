@@ -15,6 +15,8 @@ public interface StorehouseTypeRepository extends JpaRepository<StorehouseType, 
   boolean existsByCodeAndIdNotAndActiveIsTrue(String code, Integer id);
 
   Optional<StorehouseType> findByIdAndActiveIsTrue(Integer id);
+  
+  Optional<StorehouseType> findByCodeAndActiveTrue(String code);
 
   List<StorehouseType> findAllByActiveIsTrue();
 

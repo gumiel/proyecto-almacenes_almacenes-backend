@@ -16,6 +16,8 @@ public interface PackingService {
 
   Packing getById(Integer id);
 
+  Packing getByCode(String code);
+
   void delete(Integer id);
 
   List<Packing> getFiltered(String code, String name);

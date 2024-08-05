@@ -16,6 +16,8 @@ public interface UnitMeasurementService {
 
   UnitMeasurement getById(Integer id);
 
+  UnitMeasurement getByCode(String code);
+
   void delete(Integer id);
 
   List<UnitMeasurement> getFiltered(String code, String name);

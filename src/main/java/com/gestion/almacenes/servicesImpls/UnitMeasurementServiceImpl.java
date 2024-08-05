@@ -17,6 +17,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import static com.gestion.almacenes.servicesImpls.ExceptionsCustom.errorEntityNotFound;
 
 @Service
 @AllArgsConstructor
@@ -38,8 +39,8 @@ public class UnitMeasurementServiceImpl implements
   @Override
   public UnitMeasurement create(UnitMeasurementDto unitMeasurementdto) {
 
-    if (unitMeasurementRepository.existsByCodeUnitAndActiveIsTrue(
-        unitMeasurementdto.getCodeUnit())
+    if (unitMeasurementRepository.existsByCodeAndActiveIsTrue(
+        unitMeasurementdto.getCode())
     ) {
       throw new DuplicateException("UnitMeasurement", "code", "a");
     }
@@ -54,8 +55,8 @@ public class UnitMeasurementServiceImpl implements
   @Override
   public UnitMeasurement update(Integer id, UnitMeasurementDto unitMeasurementdto) {
     UnitMeasurement unitMeasurementFound = this.findUnitMeasurementById(id);
-    if (unitMeasurementRepository.existsByCodeUnitAndIdNotAndActiveIsTrue(
-        unitMeasurementdto.getCodeUnit(), unitMeasurementFound.getId())) {
+    if (unitMeasurementRepository.existsByCodeAndIdNotAndActiveIsTrue(
+        unitMeasurementdto.getCode(), unitMeasurementFound.getId())) {
       throw new DuplicateException("UnitMeasurement", "code", "1");
     }
     modelMapper.map(unitMeasurementdto, unitMeasurementFound);
@@ -66,6 +67,13 @@ public class UnitMeasurementServiceImpl implements
   @Override
   public UnitMeasurement getById(Integer id) {
     return this.findUnitMeasurementById(id);
+  }
+
+  @Override
+  public UnitMeasurement getByCode(String code) {
+    return unitMeasurementRepository.findByCodeAndActiveTrue(code).orElseThrow(
+      errorEntityNotFound(UnitMeasurement.class, "code", code)
+    );
   }
 
   @Override

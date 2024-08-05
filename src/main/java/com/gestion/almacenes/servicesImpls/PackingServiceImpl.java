@@ -9,7 +9,6 @@ import com.gestion.almacenes.dtos.PackingDto;
 import com.gestion.almacenes.entities.Packing;
 import com.gestion.almacenes.repositories.PackingRepository;
 import com.gestion.almacenes.services.PackingService;
-import java.util.List;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
@@ -17,6 +16,11 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+import static com.gestion.almacenes.servicesImpls.ExceptionsCustom.errorEntityNotFound;
+
 
 @Service
 @AllArgsConstructor
@@ -58,6 +62,13 @@ public class PackingServiceImpl implements
   @Override
   public Packing getById(Integer id) {
     return this.findPackingById(id);
+  }
+
+  @Override
+  public Packing getByCode(String code) {
+    return packingRepository.findByCodeAndActiveTrue(code).orElseThrow(
+      errorEntityNotFound(Packing.class, "code", code)
+    );
   }
 
   @Override

@@ -58,6 +58,13 @@ public class OrderProductController {
     return ResponseEntity.status(HttpStatus.OK).body(orderProduct);
   }
 
+  @Operation(summary = "Obtención de los datos del registro por el código identificador")
+  @GetMapping("/{code}")
+  public ResponseEntity<OrderProduct> getById(@PathVariable String code) {
+      OrderProduct orderProduct = orderProductService.getByCode(code);
+      return ResponseEntity.status(HttpStatus.OK).body(orderProduct);
+  }
+
   @Operation(summary = "Eliminación del registro para una orden de ingreso o salida")
   @DeleteMapping("/{id}")
   public ResponseEntity<Void> delete(@PathVariable Integer id) {

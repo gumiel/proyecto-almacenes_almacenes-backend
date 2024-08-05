@@ -24,9 +24,9 @@ public class UnitMeasurement extends Auditable {
   private Integer id;
 
   @Column(length = 30, nullable = false)
-  private String codeUnit;
+  private String code;
 
   @Column(length = 100, nullable = false)
-  private String nameUnit;
+  private String name;
 
 }

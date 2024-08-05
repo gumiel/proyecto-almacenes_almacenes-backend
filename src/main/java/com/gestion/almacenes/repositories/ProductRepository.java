@@ -15,6 +15,8 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
   boolean existsByCodeAndIdNotAndActiveIsTrue(String code, Integer id);
 
   Optional<Product> findById(Integer id);
+  
+  Optional<Product> findByCodeAndActiveTrue(String code);
 
   Optional<Product> findByIdAndActiveIsTrue(Integer id);
 

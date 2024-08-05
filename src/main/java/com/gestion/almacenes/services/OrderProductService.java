@@ -16,6 +16,8 @@ public interface OrderProductService {
 
   OrderProduct getById(Integer id);
 
+  OrderProduct getByCode(String code);
+
   void delete(Integer id);
 
   List<OrderProduct> getFiltered(String code, String name);

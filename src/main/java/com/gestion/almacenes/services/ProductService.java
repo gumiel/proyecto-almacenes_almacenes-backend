@@ -16,6 +16,8 @@ public interface ProductService {
 
   Product getById(Integer id);
 
+  Product getByCode(String code);
+
   void delete(Integer id);
 
   List<Product> search(String code, String name);

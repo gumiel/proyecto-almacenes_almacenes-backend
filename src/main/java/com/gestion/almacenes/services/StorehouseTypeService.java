@@ -16,6 +16,8 @@ public interface StorehouseTypeService {
 
   StorehouseType getById(Integer id);
 
+  StorehouseType getByCode(String code);
+
   void delete(Integer id);
 
   List<StorehouseType> getFiltered(String code, String name);

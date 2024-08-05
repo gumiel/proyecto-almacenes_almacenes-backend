@@ -11,13 +11,16 @@ import com.gestion.almacenes.mappers.ProductMapper;
 import com.gestion.almacenes.repositories.ProductRepository;
 import com.gestion.almacenes.repositories.UnitMeasurementRepository;
 import com.gestion.almacenes.services.ProductService;
-import java.util.List;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+import static com.gestion.almacenes.servicesImpls.ExceptionsCustom.errorEntityNotFound;
 
 @Service
 @AllArgsConstructor
@@ -69,6 +72,13 @@ public class ProductServiceImpl implements
   @Override
   public Product getById(Integer id) {
     return this.findProductById(id);
+  }
+
+  @Override
+  public Product getByCode(String code) {
+    return productRepository.findByCodeAndActiveTrue(code).orElseThrow(
+      errorEntityNotFound(Product.class, "code", code)
+    );
   }
 
   @Override

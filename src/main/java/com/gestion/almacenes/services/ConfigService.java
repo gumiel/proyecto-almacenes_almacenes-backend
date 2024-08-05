@@ -3,6 +3,7 @@ package com.gestion.almacenes.services;
 import com.gestion.almacenes.commons.util.PagePojo;
 import com.gestion.almacenes.dtos.ConfigDto;
 import com.gestion.almacenes.entities.Config;
+
 import java.util.List;
 
 
@@ -16,6 +17,8 @@ public interface ConfigService {
 
   Config getById(Integer id);
 
+  Config getByCode(String code);
+
   void delete(Integer id);
 
   List<Config> getFiltered(String code, String name);
@@ -23,5 +26,4 @@ public interface ConfigService {
   PagePojo<Config> getByPageAndFilters(Integer page, Integer size, String sortField,
       String sortOrder, String code, String name);
 
-  String getValueByCode(String code);
 }

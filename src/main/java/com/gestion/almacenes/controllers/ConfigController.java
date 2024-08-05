@@ -58,6 +58,13 @@ public class ConfigController {
     return ResponseEntity.status(HttpStatus.OK).body(config);
   }
 
+  @Operation(summary = "Obtención de los datos del registro por el código identificador")
+  @GetMapping("/{code}")
+  public ResponseEntity<Config> getById(@PathVariable String code) {
+      Config config = configService.getByCode(code);
+      return ResponseEntity.status(HttpStatus.OK).body(config);
+  }
+
   @Operation(summary = "Eliminación del registro por el identificador")
   @DeleteMapping("/{id}")
   public ResponseEntity<Void> delete(@PathVariable Integer id) {

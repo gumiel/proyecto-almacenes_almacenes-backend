@@ -18,4 +18,8 @@ public class ExceptionsCustom {
         return ()->new EntityNotFound(data.getSimpleName(), id);
     }
 
+    public static Supplier<? extends RuntimeException> errorEntityNotFound(Class<?> data, String attribute, String value) {
+        return ()->new EntityNotFound(data.getSimpleName(), attribute, value);
+    }
+
 }

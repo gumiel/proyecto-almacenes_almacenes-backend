@@ -15,6 +15,8 @@ public interface PackingRepository extends JpaRepository<Packing, Integer> {
   boolean existsByCodeAndIdNotAndActiveIsTrue(String code, Integer id);
 
   Optional<Packing> findByIdAndActiveIsTrue(Integer id);
+  
+  Optional<Packing> findByCodeAndActiveTrue(String code);
 
   List<Packing> findAllByActiveIsTrue();
 

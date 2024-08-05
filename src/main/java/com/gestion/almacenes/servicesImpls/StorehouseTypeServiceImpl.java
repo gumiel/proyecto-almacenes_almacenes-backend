@@ -16,6 +16,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import static com.gestion.almacenes.servicesImpls.ExceptionsCustom.errorEntityNotFound;
+import static com.gestion.almacenes.servicesImpls.ExceptionsCustom.errorProcess;
 
 @Service
 @AllArgsConstructor
@@ -57,6 +59,13 @@ public class StorehouseTypeServiceImpl implements
   @Override
   public StorehouseType getById(Integer id) {
     return this.findStorehouseTypeById(id);
+  }
+
+  @Override
+  public StorehouseType getByCode(String code) {
+    return storehouseTypeRepository.findByCodeAndActiveTrue(code).orElseThrow(
+      errorEntityNotFound(StorehouseType.class, "code", code)
+    );
   }
 
   @Override

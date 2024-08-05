@@ -4,31 +4,12 @@ import com.gestion.almacenes.commons.enums.OrderProductTypeActionEnum;
 import com.gestion.almacenes.commons.enums.StatusFlowEnum;
 import com.gestion.almacenes.commons.exception.AlreadyDeletedException;
 import com.gestion.almacenes.commons.exception.DuplicateException;
-import com.gestion.almacenes.commons.exception.EntityNotFound;
-import com.gestion.almacenes.commons.exception.ValidationErrorException;
 import com.gestion.almacenes.commons.util.GenericMapper;
 import com.gestion.almacenes.commons.util.PagePojo;
 import com.gestion.almacenes.dtos.OrderProductDto;
-import com.gestion.almacenes.entities.OrderDetailPacking;
-import com.gestion.almacenes.entities.OrderProduct;
-import com.gestion.almacenes.entities.OrderProductDetail;
-import com.gestion.almacenes.entities.OrderProductType;
-import com.gestion.almacenes.entities.PackingProduct;
-import com.gestion.almacenes.entities.Stock;
-import com.gestion.almacenes.entities.Storehouse;
-import com.gestion.almacenes.repositories.OrderDetailPackingRepository;
-import com.gestion.almacenes.repositories.OrderProductDetailRepository;
-import com.gestion.almacenes.repositories.OrderProductRepository;
-import com.gestion.almacenes.repositories.OrderProductTypeRepository;
-import com.gestion.almacenes.repositories.PackingProductRepository;
-import com.gestion.almacenes.repositories.StockRepository;
-import com.gestion.almacenes.repositories.StoreHouseRepository;
+import com.gestion.almacenes.entities.*;
+import com.gestion.almacenes.repositories.*;
 import com.gestion.almacenes.services.OrderProductService;
-import java.text.DecimalFormat;
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.List;
-import java.util.Objects;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -36,7 +17,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import static com.gestion.almacenes.servicesImpls.ExceptionsCustom.*;
+import java.text.DecimalFormat;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.List;
+import java.util.Objects;
+
+import static com.gestion.almacenes.servicesImpls.ExceptionsCustom.errorEntityNotFound;
+import static com.gestion.almacenes.servicesImpls.ExceptionsCustom.errorProcess;
 
 @Service
 @AllArgsConstructor
@@ -44,7 +32,7 @@ public class OrderProductServiceImpl implements
     OrderProductService {
 
   private final OrderProductRepository orderProductRepository;
-  private final StoreHouseRepository storeHouseRepository;
+  private final StorehouseRepository storeHouseRepository;
   private final OrderProductTypeRepository orderProductTypeRepository;
   private final GenericMapper<OrderProduct, OrderProductDto> genericMapper = new GenericMapper<>(
       OrderProduct.class);
@@ -61,11 +49,11 @@ public class OrderProductServiceImpl implements
   @Override
   public OrderProduct create(OrderProductDto orderProductdto) {
 
-    if (orderProductdto.getOrderCode() != null
-        && orderProductRepository.existsByOrderCodeAndActiveIsTrue(
-        orderProductdto.getOrderCode())) {
+    if (orderProductdto.getCode() != null
+        && orderProductRepository.existsByCodeAndActiveIsTrue(
+        orderProductdto.getCode())) {
       errorProcess(
-          "Ya existe el codigo (" + orderProductdto.getOrderCode() + ")");
+          "Ya existe el código (" + orderProductdto.getCode() + ")");
     }
 
     Storehouse storehouse = this.findStorehouseById(orderProductdto.getStorehouseId());
@@ -73,8 +61,8 @@ public class OrderProductServiceImpl implements
         orderProductdto.getOrderProductTypeId());
 
     OrderProduct orderProduct = OrderProduct.builder()
-        .orderCode(
-            (orderProductdto.getOrderCode() == null) ? "S/C" : orderProductdto.getOrderCode()
+        .code(
+            (orderProductdto.getCode() == null) ? "S/C" : orderProductdto.getCode()
         )
         .description(orderProductdto.getDescription())
         .registrationDate(
@@ -96,8 +84,8 @@ public class OrderProductServiceImpl implements
   @Override
   public OrderProduct update(Integer id, OrderProductDto orderProductdto) {
     OrderProduct orderProductFound = this.findOrderProductById(id);
-    if (orderProductRepository.existsByOrderCodeAndIdNotAndActiveIsTrue(
-        orderProductdto.getOrderCode(), orderProductFound.getId())) {
+    if (orderProductRepository.existsByCodeAndIdNotAndActiveIsTrue(
+        orderProductdto.getCode(), orderProductFound.getId())) {
       throw new DuplicateException(OrderProduct.class.getSimpleName(), "code", "");
     }
     Storehouse storehouse = this.findStorehouseById(orderProductdto.getStorehouseId());
@@ -114,6 +102,13 @@ public class OrderProductServiceImpl implements
   @Override
   public OrderProduct getById(Integer id) {
     return this.findOrderProductById(id);
+  }
+
+  @Override
+  public OrderProduct getByCode(String code) {
+    return orderProductRepository.findByCodeAndActiveTrue(code).orElseThrow(
+      errorEntityNotFound(OrderProduct.class, "code", code)
+    );
   }
 
   @Override
@@ -268,6 +263,7 @@ public class OrderProductServiceImpl implements
             errorEntityNotFound(OrderProduct.class, id)
     );
   }
+
 
   private Storehouse findStorehouseById(Integer storehouseId) {
     return storeHouseRepository.findByIdAndActiveIsTrue(storehouseId).orElseThrow(

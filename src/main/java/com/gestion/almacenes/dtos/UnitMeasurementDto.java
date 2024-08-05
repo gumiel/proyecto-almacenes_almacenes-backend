@@ -18,12 +18,12 @@ public class UnitMeasurementDto {
   @NotBlank(message = "{field} Código de la unidad de medida {cant.be.empty}")
   @Size(max = 30, message = "{field} Código de la unidad de medida {cannot.have.more.than} 30 {characters}")
   @Schema(description = "Abreviatura o codigo de la unidad de medida.")
-  private String codeUnit;
+  private String code;
 
   @NotNull(message = "{field} Nombre de la unidad de medida {is.required}")
   @NotBlank(message = "{field} Nombre de la unidad de medida {cant.be.empty}")
   @Size(max = 100, message = "{field} Nombre de la unidad de medida {cannot.have.more.than} 100 {characters}")
   @Schema(description = "Nombre de la unidad de medida.")
-  private String nameUnit;
+  private String name;
 
 }

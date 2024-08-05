@@ -17,6 +17,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import static com.gestion.almacenes.servicesImpls.ExceptionsCustom.errorEntityNotFound;
+import static com.gestion.almacenes.servicesImpls.ExceptionsCustom.errorProcess;
 
 @Service
 @AllArgsConstructor
@@ -59,6 +61,13 @@ public class OrderProductTypeServiceImpl implements
   @Override
   public OrderProductType getById(Integer id) {
     return this.findOrderTypeById(id);
+  }
+
+  @Override
+  public OrderProductType getByCode(String code) {
+    return orderProductTypeRepository.findByCodeAndActiveTrue(code).orElseThrow(
+      errorEntityNotFound(OrderProductType.class, "code", code)
+    );
   }
 
   @Override

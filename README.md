@@ -1,4 +1,4 @@
-git s# Instalacion 
+# Instalacion 
 Programas necesarios.  
 - Java 17 instalado en la maquina  
 - Postgres 15 o superiores instalado  
@@ -6,13 +6,18 @@ Para arrancar el sistema es necesario crear la base de datos "gestion_almacenes"
 Desplegar el proyecto y se crearan las tablas necesarias automaticamente
 
 #### Rutas
-- Ruta inicial: http://localhost:8081/storehouse/v1/
-- Documentacion API-REST: http://localhost:8081/storehouse/v1/doc/swagger-ui/index.html  
+- Ruta inicial: http://localhost:8081/storehouse/v1  
+- Ruta de producción: https://service-storehouse-production.onrender.com/storehouse/v1 (Esperar 45 segundo despues de ingresar a la Url para que se levante el servidor)  
+- Documentación API-REST: http://localhost:8081/storehouse/v1/doc/swagger-ui/index.html  
+- Documentación API-REST de producción: https://service-storehouse-production.onrender.com/storehouse/v1/doc/swagger-ui/index.html (Esperar 45 segundo despues de ingresar a la Url para que se levante el servidor)  
 - git remote add github https://github.com/gumiel/proyecto-almacenes_almacenes-backend.git
 
 #### Estructuras de las rutas  
 http://server:port/context-path/v1/controller/action/slug?parameter=150  
 http://server:port/context-path/v1/resource/action/slug?parameter=150  
+
+#### Modelo de base de datos  
+![Base de datos](https://res.cloudinary.com/daid2fusr/image/upload/fl_preserve_transparency/v1722827888/gestion_almacenes_-_public_lildwy.jpg)
 
 
 #### Aprendizaje
@@ -23,6 +28,11 @@ https://www.youtube.com/watch?v=Kln66OZIZME
 #### Herramientas
 Template Live: https://github.com/gumiel/gestion_almacenes/blob/master/recursos/settings.zip  
 Estilo de codificación: https://github.com/google/styleguide/blob/gh-pages/intellij-java-google-style.xml  
+
+#### Atajos de teclado intellij IDEA
+Ctrl+alt+o -> Optimiza los Imports de las clases  
+Ctrl+alt+l -> Optimiza los el codigo como tabulaciones y otros  
+Ctrl+alt+s -> Dirige a las configuraciones que puede usarse para agregar mas Templates  
 
 #### Modularizacion
 https://github.com/pwalser75/spring-boot-modular/tree/master  

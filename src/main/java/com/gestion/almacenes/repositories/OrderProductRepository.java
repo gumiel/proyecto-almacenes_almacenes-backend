@@ -10,11 +10,13 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface OrderProductRepository extends JpaRepository<OrderProduct, Integer> {
 
-  boolean existsByOrderCodeAndActiveIsTrue(String code);
+  boolean existsByCodeAndActiveIsTrue(String code);
 
-  boolean existsByOrderCodeAndIdNotAndActiveIsTrue(String code, Integer id);
+  boolean existsByCodeAndIdNotAndActiveIsTrue(String code, Integer id);
 
   Optional<OrderProduct> findByIdAndActiveIsTrue(Integer id);
+  
+  Optional<OrderProduct> findByCodeAndActiveTrue(String code);
 
   List<OrderProduct> findAllByActiveIsTrue();
 

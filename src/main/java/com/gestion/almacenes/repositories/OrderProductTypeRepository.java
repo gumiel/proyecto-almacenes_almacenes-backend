@@ -15,6 +15,8 @@ public interface OrderProductTypeRepository extends JpaRepository<OrderProductTy
   boolean existsByCodeAndIdNotAndActiveIsTrue(String code, Integer id);
 
   Optional<OrderProductType> findByIdAndActiveIsTrue(Integer id);
+  
+  Optional<OrderProductType> findByCodeAndActiveTrue(String code);
 
   List<OrderProductType> findAllByActiveIsTrue();
 
