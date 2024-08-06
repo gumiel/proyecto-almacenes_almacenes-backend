@@ -23,7 +23,10 @@ Esquema general de despliegues
 ![Esquema_de_despliegue](https://res.cloudinary.com/daid2fusr/image/upload/fl_preserve_transparency/v1722830256/Estructura_de_despliegue_almacenes-Esquema_de_despliegue.drawio_nmsf3x.jpg)
 
 Esquema de trabajo personalizado con Gitflow  
-![Esquema_gitflow](https://res.cloudinary.com/daid2fusr/image/upload/fl_preserve_transparency/v1722830259/Estructura_de_despliegue_almacenes-Esquema_gitflow.drawio_hflekf.jpg)
+![Esquema_gitflow](https://res.cloudinary.com/daid2fusr/image/upload/fl_preserve_transparency/v1722830259/Estructura_de_despliegue_almacenes-Esquema_gitflow.drawio_hflekf.jpg)  
+
+Esquema del proceso de despliegue  
+![Esquema_proceso_despliegue](https://res.cloudinary.com/daid2fusr/image/upload/v1722950138/Estructura_de_despliegue_almacenes-Esquema_del_proceso_de_despliegue.drawio_mplvv4.png)  
 
 #### Aprendizaje
 https://www.youtube.com/watch?v=-SzKqwgPTyk  
