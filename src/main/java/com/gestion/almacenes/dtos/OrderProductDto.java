@@ -1,5 +1,6 @@
 package com.gestion.almacenes.dtos;
 
+import com.gestion.almacenes.entities.Supplier;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -33,8 +34,12 @@ public class OrderProductDto {
   @NotNull(message = "{field} Identificador de Almacen {is.required}")
   @Schema(description = "Relacionador que identifica el almacen.")
   private Integer storehouseId;
+
   @NotNull(message = "{field} Identificador del tipo de orden {is.required}")
   @Schema(description = "Relacionador que identifica el tipo de orden.")
   private Integer orderProductTypeId;
+
+  @Schema(description = "Relacionador del Identificador de proveedor.")
+  private Integer supplierId;
 
 }

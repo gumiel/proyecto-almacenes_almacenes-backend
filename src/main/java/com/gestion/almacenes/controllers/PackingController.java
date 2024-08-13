@@ -59,8 +59,8 @@ public class PackingController {
   }
 
   @Operation(summary = "Obtención de los datos del registro por el código identificador")
-  @GetMapping("/{code}")
-  public ResponseEntity<Packing> getById(@PathVariable String code) {
+  @GetMapping("/getByCode/{code}")
+  public ResponseEntity<Packing> getByCode(@PathVariable String code) {
       Packing packing = packingService.getByCode(code);
       return ResponseEntity.status(HttpStatus.OK).body(packing);
   }

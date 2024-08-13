@@ -26,8 +26,8 @@ public class PackingDto {
   @Schema(description = "Nombre del empaque.")
   private String name;
 
-    @NotBlank( message = "{field} Cantidad de empaque {cant.be.empty}" )
-    private Double packagingQuantity;
+  @NotNull(message = "{field} Cantidad de empaque {is.required}")
+  private Double packagingQuantity;
 
 
 }

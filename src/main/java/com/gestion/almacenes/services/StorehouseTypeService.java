@@ -4,6 +4,7 @@ import com.gestion.almacenes.commons.util.PagePojo;
 import com.gestion.almacenes.dtos.StorehouseTypeDto;
 import com.gestion.almacenes.entities.StorehouseType;
 import java.util.List;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 
 
 public interface StorehouseTypeService {

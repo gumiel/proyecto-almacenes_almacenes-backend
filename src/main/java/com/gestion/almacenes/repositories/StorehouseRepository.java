@@ -9,7 +9,6 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface StorehouseRepository extends JpaRepository<Storehouse, Integer> {
-
   boolean existsByCodeAndActiveIsTrue(String code);
 
   boolean existsByCodeAndIdNotAndActiveIsTrue(String code, Integer id);

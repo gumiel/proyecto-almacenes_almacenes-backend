@@ -71,3 +71,4 @@ Los recursos consumidos para las pruebas estan en el directorio
 ```bash 
 /recursos/Postman-Collection/*.json
 ```
+https://drive.google.com/file/d/1cAPJL675cGzgrsBAovUAxGxIB6n178xn/edit

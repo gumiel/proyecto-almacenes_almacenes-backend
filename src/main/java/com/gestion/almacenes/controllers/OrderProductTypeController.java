@@ -59,8 +59,8 @@ public class OrderProductTypeController {
   }
 
   @Operation(summary = "Obtención de los datos del registro por el código identificador")
-  @GetMapping("/{code}")
-  public ResponseEntity<OrderProductType> getById(@PathVariable String code) {
+  @GetMapping("/getByCode/{code}")
+  public ResponseEntity<OrderProductType> getByCode(@PathVariable String code) {
       OrderProductType orderProductType = orderProductTypeService.getByCode(code);
       return ResponseEntity.status(HttpStatus.OK).body(orderProductType);
   }

@@ -2,8 +2,6 @@ package com.gestion.almacenes.servicesImpls;
 
 import com.gestion.almacenes.commons.enums.OrderProductTypeActionEnum;
 import com.gestion.almacenes.commons.enums.StatusFlowEnum;
-import com.gestion.almacenes.commons.exception.AlreadyDeletedException;
-import com.gestion.almacenes.commons.exception.DuplicateException;
 import com.gestion.almacenes.commons.util.GenericMapper;
 import com.gestion.almacenes.commons.util.PagePojo;
 import com.gestion.almacenes.dtos.OrderProductDto;
@@ -23,8 +21,7 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.Objects;
 
-import static com.gestion.almacenes.servicesImpls.ExceptionsCustom.errorEntityNotFound;
-import static com.gestion.almacenes.servicesImpls.ExceptionsCustom.errorProcess;
+import static com.gestion.almacenes.servicesImpls.ExceptionsCustom.*;
 
 @Service
 @AllArgsConstructor
@@ -40,6 +37,7 @@ public class OrderProductServiceImpl implements
   private final StockRepository stockRepository;
   private final OrderDetailPackingRepository orderDetailPackingRepository;
   private final PackingProductRepository packingProductRepository;
+  private final SupplierRepository supplierRepository;
 
   @Override
   public List<OrderProduct> getAll() {
@@ -75,10 +73,18 @@ public class OrderProductServiceImpl implements
         )
         .storehouse(storehouse)
         .orderProductType(orderProductType)
-        .status(StatusFlowEnum.BORRADOR.name())
+        .status(StatusFlowEnum.BORRADOR.name()).supplier(
+                    (orderProductdto.getSupplierId()!=null)? this.findSupplierById(orderProductdto.getSupplierId()): null
+            )
         .build();
 
     return orderProductRepository.save(orderProduct);
+  }
+
+  private Supplier findSupplierById(Integer supplierId) {
+    return supplierRepository.findByIdAndActiveIsTrue(supplierId).orElseThrow(
+            errorEntityNotFound(Supplier.class, supplierId)
+    );
   }
 
   @Override
@@ -86,7 +92,7 @@ public class OrderProductServiceImpl implements
     OrderProduct orderProductFound = this.findOrderProductById(id);
     if (orderProductRepository.existsByCodeAndIdNotAndActiveIsTrue(
         orderProductdto.getCode(), orderProductFound.getId())) {
-      throw new DuplicateException(OrderProduct.class.getSimpleName(), "code", "");
+      errorDuplicate(OrderProduct.class, "code", orderProductdto.getCode());
     }
     Storehouse storehouse = this.findStorehouseById(orderProductdto.getStorehouseId());
     OrderProductType orderProductType = this.findOrderProductTypeById(
@@ -107,7 +113,7 @@ public class OrderProductServiceImpl implements
   @Override
   public OrderProduct getByCode(String code) {
     return orderProductRepository.findByCodeAndActiveTrue(code).orElseThrow(
-      errorEntityNotFound(OrderProduct.class, "code", code)
+        errorEntityNotFound(OrderProduct.class, "code", code)
     );
   }
 
@@ -118,7 +124,8 @@ public class OrderProductServiceImpl implements
       orderProduct.setActive(false);
       orderProductRepository.save(orderProduct);
     } else {
-      throw new AlreadyDeletedException(OrderProduct.class.getSimpleName(), orderProduct.getId());
+//      throw new AlreadyDeletedException(OrderProduct.class.getSimpleName(), orderProduct.getId());
+      errorAlreadyDeleted(OrderProduct.class, orderProduct.getId());
     }
   }
 
@@ -180,12 +187,14 @@ public class OrderProductServiceImpl implements
       stockRepository.save(stock);
 
       //En caso se sea un ingreso a almacen
-      if(Objects.equals(orderProduct.getOrderProductType().getAction(), OrderProductTypeActionEnum.RECEIPT.name())){
+      if (Objects.equals(orderProduct.getOrderProductType().getAction(),
+          OrderProductTypeActionEnum.RECEIPT.name())) {
         this.copyDataOrderDetailPackingToPackingProduct(orderProductDetail, stock);
       }
 
       //En caso se sea una salida de almacen
-      if(Objects.equals(orderProduct.getOrderProductType().getAction(), OrderProductTypeActionEnum.DISPATCH.name())){
+      if (Objects.equals(orderProduct.getOrderProductType().getAction(),
+          OrderProductTypeActionEnum.DISPATCH.name())) {
         this.subtractDataOrderDetailPackingToPackingProduct(orderProductDetail, stock);
       }
 
@@ -197,9 +206,8 @@ public class OrderProductServiceImpl implements
   }
 
 
-
   private void copyDataOrderDetailPackingToPackingProduct(OrderProductDetail orderProductDetail,
-                                                          Stock stock) {
+      Stock stock) {
     // Obteneoms de un detalle especifico todos los pedidos por paquetes
     List<OrderDetailPacking> orderDetailPackings =
         orderDetailPackingRepository.findByOrderProductDetail_IdAndActiveTrue(
@@ -224,11 +232,11 @@ public class OrderProductServiceImpl implements
   }
 
   private void subtractDataOrderDetailPackingToPackingProduct(OrderProductDetail orderProductDetail,
-                                                              Stock stock) {
+      Stock stock) {
     // Obteneoms de un detalle especifico todos los pedidos por paquetes
     List<OrderDetailPacking> orderDetailPackings =
-            orderDetailPackingRepository.findByOrderProductDetail_IdAndActiveTrue(
-                    orderProductDetail.getId());
+        orderDetailPackingRepository.findByOrderProductDetail_IdAndActiveTrue(
+            orderProductDetail.getId());
 
     PackingProduct packingProductNew = new PackingProduct();
 
@@ -236,17 +244,20 @@ public class OrderProductServiceImpl implements
     for (OrderDetailPacking orderDetailPacking : orderDetailPackings) {
 
       //Buscamos el empaque del producto para restar a tu cantidad
-      PackingProduct packingProduct = this.findPackingProductById(orderDetailPacking.getPackingProduct().getId());
-      double newAmount = packingProduct.getAmount()-orderDetailPacking.getAmount();
-      if(newAmount>=0)
+      PackingProduct packingProduct = this.findPackingProductById(
+          orderDetailPacking.getPackingProduct().getId());
+      double newAmount = packingProduct.getAmount() - orderDetailPacking.getAmount();
+      if (newAmount >= 0) {
         packingProduct.setAmount(newAmount);
-      else
-        errorProcess(String.format("El producto (%s con codigo de empaque '%s') tiene un saldo disponible de (%s) y no puede despachar la cantidad de (%s) solicitada",
-                packingProduct.getStock().getProduct().getName(),
-                orderDetailPacking.getCode(),
-                packingProduct.getAmount(),
-                orderDetailPacking.getAmount() )
+      } else {
+        errorProcess(String.format(
+            "El producto (%s con codigo de empaque '%s') tiene un saldo disponible de (%s) y no puede despachar la cantidad de (%s) solicitada",
+            packingProduct.getStock().getProduct().getName(),
+            orderDetailPacking.getCode(),
+            packingProduct.getAmount(),
+            orderDetailPacking.getAmount())
         );
+      }
       packingProductRepository.save(packingProduct);
 
     }
@@ -254,30 +265,31 @@ public class OrderProductServiceImpl implements
 
   private PackingProduct findPackingProductById(Integer id) {
     return packingProductRepository.findByIdAndActiveIsTrue(id).orElseThrow(
-            errorEntityNotFound(PackingProduct.class, id)
+        errorEntityNotFound(PackingProduct.class, id)
     );
   }
 
   private OrderProduct findOrderProductById(Integer id) {
     return orderProductRepository.findByIdAndActiveIsTrue(id).orElseThrow(
-            errorEntityNotFound(OrderProduct.class, id)
+        errorEntityNotFound(OrderProduct.class, id)
     );
   }
 
 
   private Storehouse findStorehouseById(Integer storehouseId) {
     return storeHouseRepository.findByIdAndActiveIsTrue(storehouseId).orElseThrow(
-            errorEntityNotFound(Storehouse.class, storehouseId)
+        errorEntityNotFound(Storehouse.class, storehouseId)
     );
   }
 
   private OrderProductType findOrderProductTypeById(Integer orderProductTypeId) {
     return orderProductTypeRepository.findByIdAndActiveIsTrue(orderProductTypeId).orElseThrow(
-            errorEntityNotFound(OrderProductType.class, orderProductTypeId)
+        errorEntityNotFound(OrderProductType.class, orderProductTypeId)
     );
   }
 
-  private void validationExecuteOrderProduct(List<OrderProductDetail> orderProductDetails, OrderProduct orderProduct) {
+  private void validationExecuteOrderProduct(List<OrderProductDetail> orderProductDetails,
+      OrderProduct orderProduct) {
     if (orderProductDetails.isEmpty()) {
       errorProcess("No tiene items para realizar.");
     }

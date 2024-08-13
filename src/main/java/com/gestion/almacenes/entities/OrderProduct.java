@@ -49,4 +49,8 @@ public class OrderProduct extends Auditable {
 
   private String status;
 
+  @ManyToOne
+  @JoinColumn(name = "supplier_id")
+  private Supplier supplier;
+
 }

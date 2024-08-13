@@ -11,6 +11,7 @@ import java.util.List;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -39,7 +40,7 @@ public class StorehouseTypeController {
 
   @Operation(summary = "Creación del registro")
   @PostMapping
-  public ResponseEntity<StorehouseType> create(@Valid @RequestBody StorehouseTypeDto dto) {
+  public ResponseEntity<StorehouseType> create(@Valid @RequestBody StorehouseTypeDto dto){
     StorehouseType storehouseTypeSaved = storehouseTypeService.create(dto);
     return ResponseEntity.status(HttpStatus.CREATED).body(storehouseTypeSaved);
   }
@@ -60,8 +61,8 @@ public class StorehouseTypeController {
   }
 
   @Operation(summary = "Obtención de los datos del registro por el código identificador")
-  @GetMapping("/{code}")
-  public ResponseEntity<StorehouseType> getById(@PathVariable String code) {
+  @GetMapping("/getByCode/{code}")
+  public ResponseEntity<StorehouseType> getByCode(@PathVariable String code) {
     StorehouseType storehouseType = storehouseTypeService.getByCode(code);
     return ResponseEntity.status(HttpStatus.OK).body(storehouseType);
   }
