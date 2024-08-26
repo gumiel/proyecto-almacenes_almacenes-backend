@@ -1,17 +1,12 @@
 stages:
   - deploy
 
-variables:
-  URL_DB: ${URL_DB}
-  USER_DB: $USER_DB
-  PASS_DB: ${PASS_DB}
-
 deploy_production:
   stage: deploy
   tags:
     - digitalocean
   script:
-    - echo "Conectando a (${URL_DB}) con usuario ($USER_DB) y clave ($PASS_DB)."
+#    - echo "Conectando a (${URL_DB}) con usuario ($USER_DB) y clave ($PASS_DB)."
 #    - docker stop almacenes-container
 #    - docker rm almacenes-container
 #    - docker rmi spring-api-image
