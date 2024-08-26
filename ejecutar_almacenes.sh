@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Definir variables
-JAR_PATH="./target/almacenes-0.0.1-SNAPSHOT.jar"
+JAR_PATH="./target/almacenes-0.0.1-SNAPSHOT.jar --spring.profiles.active=production"
 LOG_PATH="./almacenes.log"
 
 # Comando para ejecutar la aplicación
