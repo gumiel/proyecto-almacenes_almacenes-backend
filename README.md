@@ -7,9 +7,9 @@ Desplegar el proyecto y se crearan las tablas necesarias automaticamente
 
 #### Rutas
 - Ruta inicial: http://localhost:8081/storehouse/v1  
-- Ruta de producción: https://service-storehouse-production.onrender.com/storehouse/v1 (Esperar 45 segundo despues de ingresar a la Url para que se levante el servidor)  
+- Ruta de producción: http://206.189.237.209:8081/storehouse/v1 (Esperar 45 segundo despues de ingresar a la Url para que se levante el servidor)  
 - Documentación API-REST: http://localhost:8081/storehouse/v1/doc/swagger-ui/index.html  
-- Documentación API-REST de producción: https://service-storehouse-production.onrender.com/storehouse/v1/doc/swagger-ui/index.html (Esperar 45 segundo despues de ingresar a la Url para que se levante el servidor)  
+- Documentación API-REST de producción: http://206.189.237.209:8081/storehouse/v1/doc/swagger-ui/index.html (Esperar 45 segundo despues de ingresar a la Url para que se levante el servidor)  
 - git remote add github https://github.com/gumiel/proyecto-almacenes_almacenes-backend.git
 
 #### Estructuras de las rutas  
