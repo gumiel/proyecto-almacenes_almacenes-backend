@@ -3,7 +3,7 @@ stages:
 
 variables:
   URL_DB: ${URL_DB}
-  USER_DB: "postgres"
+  USER_DB: $USER_DB
   PASS_DB: ${PASS_DB}
 
 deploy_production:
@@ -11,7 +11,7 @@ deploy_production:
   tags:
     - digitalocean
   script:
-    - echo "hola ${URL_DB} "
+    - echo "hola $USER_DB"
 #    - docker stop almacenes-container
 #    - docker rm almacenes-container
 #    - docker rmi spring-api-image
