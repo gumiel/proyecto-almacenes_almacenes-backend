@@ -25,6 +25,6 @@ job_1:
 #    - docker run -d -p 8081:8081 --name almacenes-container almacenes-app
   artifacts:
     paths:
-      - /target/almacenes-0.0.1-SNAPSHOT.jar
+      - ./target/almacenes-0.0.1-SNAPSHOT.jar
   only:
     - develop
