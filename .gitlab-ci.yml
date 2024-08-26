@@ -1,12 +1,17 @@
 stages:
   - deploy
 
+variables:
+  URL_DB: ${URL_DB}
+  USER_DB: ${USER_DB}
+  PASS_DB: ${PASS_DB}
+
 deploy_production:
   stage: deploy
   tags:
     - digitalocean
   script:
-#    - echo "hola"
+    - echo "hola ${URL_DB} "
 #    - docker stop almacenes-container
 #    - docker rm almacenes-container
 #    - docker rmi spring-api-image
