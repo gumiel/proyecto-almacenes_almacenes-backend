@@ -1,8 +1,8 @@
 stages:
-  - prueba
+  - deploy
 
-job_1:
-  stage: prueba
+deploy_production:
+  stage: deploy
   tags:
     - digitalocean
   script:
