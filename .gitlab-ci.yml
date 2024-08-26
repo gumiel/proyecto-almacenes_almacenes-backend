@@ -3,7 +3,7 @@ stages:
 
 variables:
   URL_DB: ${URL_DB}
-  USER_DB: ${USER_DB}
+  USER_DB: "postgres"
   PASS_DB: ${PASS_DB}
 
 deploy_production:
