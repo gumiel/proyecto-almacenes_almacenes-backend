@@ -1,6 +1,11 @@
 stages:
   - deploy
 
+#variables:
+#  URL_DB: ${URL_DB}
+#  USER_DB: $USER_DB
+#  PASS_DB: ${PASS_DB}
+
 deploy_production:
   stage: deploy
   tags:
