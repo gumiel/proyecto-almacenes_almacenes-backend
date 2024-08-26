@@ -24,6 +24,7 @@ job_1:
 #    - docker rm almacenes-container
 #    - docker run -d -p 8081:8081 --name almacenes-container almacenes-app
   artifacts:
+    name: "$env:CI_JOB_STAGE-$env:CI_COMMIT_REF_NAME"
     paths:
       - ./target/almacenes-0.0.1-SNAPSHOT.jar
   only:
