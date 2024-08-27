@@ -3,7 +3,7 @@ package com.gestion.almacenes.servicesImpls;
 import static com.gestion.almacenes.servicesImpls.ExceptionsCustom.errorEntityNotFound;
 import static com.gestion.almacenes.servicesImpls.ExceptionsCustom.errorProcess;
 
-import com.gestion.almacenes.commons.enums.PackingCode;
+import com.gestion.almacenes.commons.enums.PackingCodeEnum;
 import com.gestion.almacenes.commons.enums.StatusFlowEnum;
 import com.gestion.almacenes.commons.exception.ValidationErrorException;
 import com.gestion.almacenes.commons.util.GenericMapper;
@@ -238,18 +238,18 @@ public class OrderProductDetailServiceImpl implements
 
     if (orderProductDetailDto.getOrderDetailPackingDtos() == null) {
       Optional<Packing> packing = packingRepository.findByCodeAndActiveTrue(
-          PackingCode.NA.getCode());
+          PackingCodeEnum.NA.getCode());
       if (packing.isEmpty()) {
-        errorProcess("El código " + PackingCode.NA.getCode() + " no existe");
+        errorProcess("El código " + PackingCodeEnum.NA.getCode() + " no existe");
       }
 
 
       List<OrderDetailPackingDto> orderDetailPackingDtos = new ArrayList<>();
       OrderDetailPackingDto orderDetailPackingDto = new OrderDetailPackingDto();
       orderDetailPackingDto.setPackingId(packing.get().getId());
-      orderDetailPackingDto.setCode(PackingCode.NA.getCode());
-      orderDetailPackingDto.setAmount();
-      orderDetailPackingDto.setExpirationDate();
+      orderDetailPackingDto.setCode(null);
+      orderDetailPackingDto.setAmount(orderProductDetail.getAmount());
+      orderDetailPackingDto.setExpirationDate(null);
       orderDetailPackingDto.setOrderProductDetailId();
       orderDetailPackingDto.setPackingProductId();
       orderDetailPackingDtos.add(orderDetailPackingDto);

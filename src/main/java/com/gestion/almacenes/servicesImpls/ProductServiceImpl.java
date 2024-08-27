@@ -1,19 +1,25 @@
 package com.gestion.almacenes.servicesImpls;
 
+import com.gestion.almacenes.commons.enums.PackingCodeEnum;
 import com.gestion.almacenes.commons.util.GenericMapper;
 import com.gestion.almacenes.commons.util.PagePojo;
 import com.gestion.almacenes.dtos.ProductDto;
 import com.gestion.almacenes.entities.CatalogProductStorehouse;
+import com.gestion.almacenes.entities.Packing;
+import com.gestion.almacenes.entities.PackingProduct;
 import com.gestion.almacenes.entities.Product;
 import com.gestion.almacenes.entities.Storehouse;
 import com.gestion.almacenes.entities.UnitMeasurement;
 import com.gestion.almacenes.mappers.ProductMapper;
 import com.gestion.almacenes.repositories.CatalogProductStorehouseRepository;
+import com.gestion.almacenes.repositories.PackingRepository;
 import com.gestion.almacenes.repositories.ProductRepository;
 import com.gestion.almacenes.repositories.StorehouseRepository;
 import com.gestion.almacenes.repositories.UnitMeasurementRepository;
 import com.gestion.almacenes.services.ProductService;
 import jakarta.transaction.Transactional;
+import java.util.Optional;
+import javax.swing.text.html.Option;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -39,6 +45,7 @@ public class ProductServiceImpl implements
       Product.class);
   private final StorehouseRepository storehouseRepository;
   private final CatalogProductStorehouseRepository catalogProductStorehouseRepository;
+  private final PackingRepository packingRepository;
 
   @Override
   public List<Product> getAll() {
@@ -81,7 +88,13 @@ public class ProductServiceImpl implements
       }
     }
 
+    Optional<Packing> packingOptional = packingRepository.findByCodeAndActiveTrue(PackingCodeEnum.NA.getCode());
+    if(packingOptional.isEmpty())
+      errorProcess("El código " + PackingCodeEnum.NA.getCode() + " no existe");
 
+    PackingProduct packingProduct = new PackingProduct();
+    packingProduct.setPacking(packingOptional.get());
+    packingProduct.set
 
 
     return productNew;
