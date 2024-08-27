@@ -1,7 +1,9 @@
 package com.gestion.almacenes.servicesImpls;
 
 import static com.gestion.almacenes.servicesImpls.ExceptionsCustom.errorEntityNotFound;
+import static com.gestion.almacenes.servicesImpls.ExceptionsCustom.errorProcess;
 
+import com.gestion.almacenes.commons.enums.PackingCode;
 import com.gestion.almacenes.commons.enums.StatusFlowEnum;
 import com.gestion.almacenes.commons.exception.ValidationErrorException;
 import com.gestion.almacenes.commons.util.GenericMapper;
@@ -24,8 +26,10 @@ import com.gestion.almacenes.repositories.ProductRepository;
 import com.gestion.almacenes.repositories.StockRepository;
 import com.gestion.almacenes.services.OrderProductDetailService;
 import jakarta.transaction.Transactional;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -229,12 +233,33 @@ public class OrderProductDetailServiceImpl implements
    */
   private Double registerBatchOfOrderDetailByPackage(OrderProductDetailDto orderProductDetailDto,
       OrderProductDetail orderProductDetail) {
+
     double amountTotal = Double.parseDouble("0");
+
+    if (orderProductDetailDto.getOrderDetailPackingDtos() == null) {
+      Optional<Packing> packing = packingRepository.findByCodeAndActiveTrue(
+          PackingCode.NA.getCode());
+      if (packing.isEmpty()) {
+        errorProcess("El código " + PackingCode.NA.getCode() + " no existe");
+      }
+
+
+      List<OrderDetailPackingDto> orderDetailPackingDtos = new ArrayList<>();
+      OrderDetailPackingDto orderDetailPackingDto = new OrderDetailPackingDto();
+      orderDetailPackingDto.setPackingId(packing.get().getId());
+      orderDetailPackingDto.setCode(PackingCode.NA.getCode());
+      orderDetailPackingDto.setAmount();
+      orderDetailPackingDto.setExpirationDate();
+      orderDetailPackingDto.setOrderProductDetailId();
+      orderDetailPackingDto.setPackingProductId();
+      orderDetailPackingDtos.add(orderDetailPackingDto);
+    }
 
     for (OrderDetailPackingDto orderDetailPackingDto : orderProductDetailDto.getOrderDetailPackingDtos()) {
 
       OrderDetailPacking orderDetailPacking = new OrderDetailPacking();
       Packing packing = this.findPackingById(orderDetailPackingDto.getPackingId());
+
       if (packing.getAmount() < orderDetailPackingDto.getAmount()) {
         throw new ValidationErrorException(
             String.format(
@@ -259,6 +284,8 @@ public class OrderProductDetailServiceImpl implements
       amountTotal = amountTotal + orderDetailPackingDto.getAmount();
     }
     return amountTotal;
+
+
   }
 
   private PackingProduct findPackingProductById(Integer id) {

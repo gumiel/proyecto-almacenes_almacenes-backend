@@ -17,4 +17,5 @@ public interface PackingProductRepository extends JpaRepository<PackingProduct, 
 
     List<PackingProduct> findAllByActiveIsTrue();
 
+    Optional<PackingProduct> findByCodeAndActiveTrue(String code);
 }
