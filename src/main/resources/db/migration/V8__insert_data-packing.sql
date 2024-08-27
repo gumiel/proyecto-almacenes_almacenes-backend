@@ -1,3 +1,4 @@
+INSERT INTO public.packing (active, created_by, created_date, last_modified_by, last_modified_date, code, "name", amount) VALUES( true, NULL, NULL, NULL, NULL, 'n/a', 'No corresponde al caso', 0);
 INSERT INTO public.packing (active, created_by, created_date, last_modified_by, last_modified_date, code, "name", amount) VALUES( true, NULL, NULL, NULL, NULL, 'Ud.', 'Unidad', 1);
 INSERT INTO public.packing (active, created_by, created_date, last_modified_by, last_modified_date, code, "name", amount) VALUES( true, NULL, NULL, NULL, NULL, 'Cj-6', 'Caja de 6 unidades', 6);
 INSERT INTO public.packing (active, created_by, created_date, last_modified_by, last_modified_date, code, "name", amount) VALUES( true, NULL, NULL, NULL, NULL, 'Cj-12', 'Caja de 12 unidades', 12);

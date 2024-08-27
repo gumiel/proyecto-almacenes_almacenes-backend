@@ -85,5 +85,11 @@ public class CatalogProductStorehouseController {
         return ResponseEntity.status(HttpStatus.OK).body(catalogProductStorehousePagePojoFiltered);
     }
 
+    @Operation(summary = "Agrega todos los productos al catalogo de un almacén.")
+    @PostMapping("/addAllProductsToStorehouse")
+    public ResponseEntity<Void> addAllProductsToStorehouse(@Valid @RequestBody CatalogProductStorehouseDto dto) {
+        catalogProductStorehouseService.addAllProductsToStorehouse(dto.getStorehouseId());
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
 
 }

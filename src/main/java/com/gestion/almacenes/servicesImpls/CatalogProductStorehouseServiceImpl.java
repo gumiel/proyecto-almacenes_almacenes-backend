@@ -120,4 +120,9 @@ public class CatalogProductStorehouseServiceImpl implements
         );
     }
 
+    @Override
+    public void addAllProductsToStorehouse(Integer storehouseId) {
+        Storehouse storehouse = this.findStoreHouseById(storehouseId);
+        catalogProductStorehouseRepository.addAllProductsToStorehouse(storehouse.getId());
+    }
 }
