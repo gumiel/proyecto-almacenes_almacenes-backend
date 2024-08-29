@@ -88,15 +88,6 @@ public class ProductServiceImpl implements
       }
     }
 
-    Optional<Packing> packingOptional = packingRepository.findByCodeAndActiveTrue(PackingCodeEnum.NA.getCode());
-    if(packingOptional.isEmpty())
-      errorProcess("El código " + PackingCodeEnum.NA.getCode() + " no existe");
-
-    PackingProduct packingProduct = new PackingProduct();
-    packingProduct.setPacking(packingOptional.get());
-    packingProduct.set
-
-
     return productNew;
   }
 

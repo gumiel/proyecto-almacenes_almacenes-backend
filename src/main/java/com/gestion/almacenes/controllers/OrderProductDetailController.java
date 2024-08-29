@@ -43,6 +43,13 @@ public class OrderProductDetailController {
     return ResponseEntity.status(HttpStatus.CREATED).body(orderProductDetailSaved);
   }
 
+  @Operation(summary = "Creación del detalle de una orden")
+  @PostMapping("/createList")
+  public ResponseEntity<Void> createList(@Valid @RequestBody List<OrderProductDetailDto> orderProductDetailDtos) {
+    orderProductDetailService.createList(orderProductDetailDtos);
+    return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+  }
+
   @Operation(summary = "Edición del detalle de una orden")
   @PutMapping("/{id}")
   public ResponseEntity<OrderProductDetail> update(@PathVariable Integer id,

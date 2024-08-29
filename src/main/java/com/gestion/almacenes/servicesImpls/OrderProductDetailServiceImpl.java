@@ -26,6 +26,8 @@ import com.gestion.almacenes.repositories.ProductRepository;
 import com.gestion.almacenes.repositories.StockRepository;
 import com.gestion.almacenes.services.OrderProductDetailService;
 import jakarta.transaction.Transactional;
+
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -99,6 +101,12 @@ public class OrderProductDetailServiceImpl implements
     return orderProductDetailNew;
   }
 
+  @Override
+  public void createList(List<OrderProductDetailDto> orderProductDetailDtos) {
+    for (OrderProductDetailDto orderProductDetailDto: orderProductDetailDtos){
+      create(orderProductDetailDto);
+    }
+  }
 
   @Override
   public OrderProductDetail update(Integer id, OrderProductDetailDto orderProductDetailDto) {
@@ -243,16 +251,19 @@ public class OrderProductDetailServiceImpl implements
         errorProcess("El código " + PackingCodeEnum.NA.getCode() + " no existe");
       }
 
+      String codeRandom = getCodeRandom();
 
       List<OrderDetailPackingDto> orderDetailPackingDtos = new ArrayList<>();
+
       OrderDetailPackingDto orderDetailPackingDto = new OrderDetailPackingDto();
       orderDetailPackingDto.setPackingId(packing.get().getId());
-      orderDetailPackingDto.setCode(null);
+      orderDetailPackingDto.setCode(codeRandom);
       orderDetailPackingDto.setAmount(orderProductDetail.getAmount());
       orderDetailPackingDto.setExpirationDate(null);
-      orderDetailPackingDto.setOrderProductDetailId();
-      orderDetailPackingDto.setPackingProductId();
+
       orderDetailPackingDtos.add(orderDetailPackingDto);
+
+      orderProductDetailDto.setOrderDetailPackingDtos(orderDetailPackingDtos);
     }
 
     for (OrderDetailPackingDto orderDetailPackingDto : orderProductDetailDto.getOrderDetailPackingDtos()) {
@@ -260,7 +271,7 @@ public class OrderProductDetailServiceImpl implements
       OrderDetailPacking orderDetailPacking = new OrderDetailPacking();
       Packing packing = this.findPackingById(orderDetailPackingDto.getPackingId());
 
-      if (packing.getAmount() < orderDetailPackingDto.getAmount()) {
+      if (packing.getAmount() < orderDetailPackingDto.getAmount() && packing.getAmount() > 0) {
         throw new ValidationErrorException(
             String.format(
                 "El empaque (%s) con fecha de vencimiento (%s) solo puede contener maximo (%s) y se envio (%s)",
@@ -268,6 +279,7 @@ public class OrderProductDetailServiceImpl implements
                 packing.getAmount(), orderDetailPackingDto.getAmount())
         );
       }
+
       orderDetailPacking.setCode(
           (orderDetailPackingDto.getCode() == null) ? "" : orderDetailPackingDto.getCode()
       );
@@ -286,6 +298,16 @@ public class OrderProductDetailServiceImpl implements
     return amountTotal;
 
 
+  }
+
+  private static String getCodeRandom() {
+    return String.valueOf(LocalDateTime.now().getYear()) +
+            String.valueOf(LocalDateTime.now().getMonthValue()) +
+            String.valueOf(LocalDateTime.now().getDayOfMonth()) +
+            String.valueOf(LocalDateTime.now().getHour()) +
+            String.valueOf(LocalDateTime.now().getMinute()) +
+            String.valueOf(LocalDateTime.now().getSecond()) +
+            String.valueOf(LocalDateTime.now().getNano());
   }
 
   private PackingProduct findPackingProductById(Integer id) {

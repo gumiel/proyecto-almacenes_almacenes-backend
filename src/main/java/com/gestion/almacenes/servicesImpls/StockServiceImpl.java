@@ -99,6 +99,11 @@ public class StockServiceImpl implements
     return genericMapper.fromEntity(stockPage);
   }
 
+  @Override
+  public Stock getStockByStorehouseIdAndProductId(Integer storehouseId, Integer productId) {
+    return stockRepository.findByStorehouse_IdAndProduct_IdAndActiveTrue(storehouseId, productId).orElseThrow();
+  }
+
   private Stock findStockById(Integer id) {
     return stockRepository.findByIdAndActiveIsTrue(id).orElseThrow(
         errorEntityNotFound(Stock.class, id)

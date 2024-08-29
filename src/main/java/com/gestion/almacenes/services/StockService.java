@@ -22,4 +22,6 @@ public interface StockService {
 
   PagePojo<Stock> getByPageAndFilters(Integer page, Integer size, String sortField,
       String sortOrder, String code, String name);
+
+  Stock getStockByStorehouseIdAndProductId(Integer storehouseId, Integer productId);
 }
