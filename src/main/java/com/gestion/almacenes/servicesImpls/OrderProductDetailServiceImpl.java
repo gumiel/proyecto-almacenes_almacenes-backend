@@ -63,11 +63,14 @@ public class OrderProductDetailServiceImpl implements
   @Override
   public OrderProductDetail create(OrderProductDetailDto orderProductDetaildto) {
 
+    // Obtenemos la cabecera que es la orden de producto
     OrderProduct orderProduct = this.findOrderProductById(
         orderProductDetaildto.getOrderProductId());
 
+    // Verificamos si no se finalizo la solicitud de orden de ingreso
     this.checkIfOrderIsFinalized(orderProduct);
 
+    // Verificamos si no fue ya ingresado el mismo producto al almacen
     if (orderProductDetailRepository.existsByOrderProduct_IdAndStock_Storehouse_IdAndStock_Product_IdAndActiveTrue(
         orderProductDetaildto.getOrderProductId(),
         orderProduct.getStorehouse().getId(),
@@ -77,17 +80,18 @@ public class OrderProductDetailServiceImpl implements
       //throw new ValidationErrorException("Ya fue registrado en la orden el Item ("+product.getName()+")");
     }
 
+    // Creamos la entidad con los datos de stock (producto y almacen), cantidad ingresada y cabecera
     OrderProductDetail orderProductDetail = OrderProductDetail.builder()
         .stock(
             this.findStockByStorehouseIdAndProductId(orderProduct.getStorehouse().getId(),
                 orderProductDetaildto.getProductId())
         )
-        .amount(orderProductDetaildto.getAmount())
         .orderProduct(
             orderProduct
         )
         .build();
 
+    // Guardamos la entidad el detalle
     OrderProductDetail orderProductDetailNew = orderProductDetailRepository.save(
         orderProductDetail);
 
@@ -122,7 +126,6 @@ public class OrderProductDetailServiceImpl implements
         this.findStockByStorehouseIdAndProductId(orderProduct.getStorehouse().getId(),
             orderProductDetailDto.getProductId())
     );
-    orderProductDetailFound.setAmount(orderProductDetailDto.getAmount());
     orderProductDetailFound.setOrderProduct(orderProduct);
 
     // Eliminamos todos los empaques que estan en el lote del detalle de orden
@@ -244,9 +247,14 @@ public class OrderProductDetailServiceImpl implements
 
     double amountTotal = Double.parseDouble("0");
 
+    // Verificamos si se envia el DTO (OrderDetailPackingDtos) si no se envia entra aqui para crear uno por defecto
     if (orderProductDetailDto.getOrderDetailPackingDtos() == null) {
+
+      // Obtenemos el Empaque por defecto cuando no se envia un empaque
       Optional<Packing> packing = packingRepository.findByCodeAndActiveTrue(
           PackingCodeEnum.NA.getCode());
+
+      // validamos que exista el empaque por defecto
       if (packing.isEmpty()) {
         errorProcess("El código " + PackingCodeEnum.NA.getCode() + " no existe");
       }
@@ -266,20 +274,26 @@ public class OrderProductDetailServiceImpl implements
       orderProductDetailDto.setOrderDetailPackingDtos(orderDetailPackingDtos);
     }
 
+    // Recorremos todos los (OrderDetailPackingDto) que nos envian de un producto
     for (OrderDetailPackingDto orderDetailPackingDto : orderProductDetailDto.getOrderDetailPackingDtos()) {
 
-      OrderDetailPacking orderDetailPacking = new OrderDetailPacking();
+
+
+      // Obtenemos la entidad de empaque
       Packing packing = this.findPackingById(orderDetailPackingDto.getPackingId());
 
+      // Verificamos que la cantidad enviada en (OrderDetailPackingDto) sea igual o menos a la cantidad que soporta el empaque
       if (packing.getAmount() < orderDetailPackingDto.getAmount() && packing.getAmount() > 0) {
-        throw new ValidationErrorException(
-            String.format(
+        errorProcess(String.format(
                 "El empaque (%s) con fecha de vencimiento (%s) solo puede contener maximo (%s) y se envio (%s)",
                 packing.getName(), orderDetailPackingDto.getExpirationDate(),
                 packing.getAmount(), orderDetailPackingDto.getAmount())
         );
       }
 
+      // Creamos la entidad (OrderDetailPacking)
+      OrderDetailPacking orderDetailPacking = new OrderDetailPacking();
+      // Editamos la entidad nueva con el codigo y si no se envia el codigo lo pone como vacio
       orderDetailPacking.setCode(
           (orderDetailPackingDto.getCode() == null) ? "" : orderDetailPackingDto.getCode()
       );
@@ -295,8 +309,8 @@ public class OrderProductDetailServiceImpl implements
       orderDetailPackingRepository.save(orderDetailPacking);
       amountTotal = amountTotal + orderDetailPackingDto.getAmount();
     }
-    return amountTotal;
 
+    return amountTotal;
 
   }
 
