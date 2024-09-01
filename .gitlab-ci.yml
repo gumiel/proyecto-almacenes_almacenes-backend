@@ -1,10 +1,19 @@
 stages:
+  - compile
   - deploy
 
 #variables:
 #  URL_DB: ${URL_DB}
 #  USER_DB: $USER_DB
 #  PASS_DB: ${PASS_DB}
+
+compile_test:
+  stage: compile
+  tags:
+    - uno
+  script:
+    - mvn dependency:go-offline
+    - mvn clean install -DskipTests
 
 deploy_production:
   stage: deploy
