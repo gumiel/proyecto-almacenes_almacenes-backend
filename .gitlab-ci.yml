@@ -10,7 +10,7 @@ stages:
 compile_test:
   stage: compile
   tags:
-    - uno
+    - dos
   script:
     - mvn dependency:go-offline
     - mvn clean install -DskipTests
