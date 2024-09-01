@@ -1,43 +1,33 @@
 package com.gestion.almacenes.servicesImpls;
 
-import static com.gestion.almacenes.servicesImpls.ExceptionsCustom.errorEntityNotFound;
-import static com.gestion.almacenes.servicesImpls.ExceptionsCustom.errorProcess;
-
 import com.gestion.almacenes.commons.enums.PackingCodeEnum;
 import com.gestion.almacenes.commons.enums.StatusFlowEnum;
 import com.gestion.almacenes.commons.exception.ValidationErrorException;
 import com.gestion.almacenes.commons.util.GenericMapper;
 import com.gestion.almacenes.commons.util.PagePojo;
-import com.gestion.almacenes.dtos.OrderDetailPackingDto;
 import com.gestion.almacenes.dtos.OrderProductDetailDto;
-import com.gestion.almacenes.entities.OrderDetailPacking;
 import com.gestion.almacenes.entities.OrderProduct;
 import com.gestion.almacenes.entities.OrderProductDetail;
-import com.gestion.almacenes.entities.Packing;
-import com.gestion.almacenes.entities.PackingProduct;
 import com.gestion.almacenes.entities.Product;
 import com.gestion.almacenes.entities.Stock;
-import com.gestion.almacenes.repositories.OrderDetailPackingRepository;
-import com.gestion.almacenes.repositories.OrderProductDetailRepository;
-import com.gestion.almacenes.repositories.OrderProductRepository;
-import com.gestion.almacenes.repositories.PackingProductRepository;
-import com.gestion.almacenes.repositories.PackingRepository;
-import com.gestion.almacenes.repositories.ProductRepository;
-import com.gestion.almacenes.repositories.StockRepository;
+import com.gestion.almacenes.repositories.*;
 import com.gestion.almacenes.services.OrderProductDetailService;
 import jakarta.transaction.Transactional;
-
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+
+import static com.gestion.almacenes.servicesImpls.ExceptionsCustom.errorEntityNotFound;
+import static com.gestion.almacenes.servicesImpls.ExceptionsCustom.errorProcess;
 
 @Service
 @AllArgsConstructor
@@ -49,11 +39,8 @@ public class OrderProductDetailServiceImpl implements
   private final OrderProductRepository orderProductRepository;
   private final StockRepository stockRepository;
   private final ProductRepository productRepository;
-  private final PackingRepository packingRepository;
   private final GenericMapper<OrderProductDetail, OrderProductDetailDto> genericMapper = new GenericMapper<>(
       OrderProductDetail.class);
-  private final OrderDetailPackingRepository orderDetailPackingRepository;
-  private final PackingProductRepository packingProductRepository;
 
   @Override
   public List<OrderProductDetail> getAll() {
@@ -82,25 +69,18 @@ public class OrderProductDetailServiceImpl implements
 
     // Creamos la entidad con los datos de stock (producto y almacen), cantidad ingresada y cabecera
     OrderProductDetail orderProductDetail = OrderProductDetail.builder()
-        .stock(
+            .stock(
             this.findStockByStorehouseIdAndProductId(orderProduct.getStorehouse().getId(),
-                orderProductDetaildto.getProductId())
-        )
-        .orderProduct(
-            orderProduct
-        )
+                orderProductDetaildto.getProductId()))
+            .amount(orderProductDetaildto.getAmount())
+            .orderProduct(orderProduct)
+            .codeProduct(orderProductDetaildto.getCodeProduct())
+            .expirationDateProduct(orderProductDetaildto.getExpirationDateProduct())
         .build();
 
     // Guardamos la entidad el detalle
     OrderProductDetail orderProductDetailNew = orderProductDetailRepository.save(
         orderProductDetail);
-
-    //Creamos el OrderDetailPacking de todos los paquetes por lote que creamos
-    Double amountTotal = this.registerBatchOfOrderDetailByPackage(orderProductDetaildto,
-        orderProductDetailNew);
-
-    // Verificamos si el total del detalle es igual a la cantidad de paquetes por lote
-    this.checkIfTotalQuantityIsEqualToQuantityBatch(amountTotal, orderProductDetaildto);
 
     return orderProductDetailNew;
   }
@@ -128,15 +108,7 @@ public class OrderProductDetailServiceImpl implements
     );
     orderProductDetailFound.setOrderProduct(orderProduct);
 
-    // Eliminamos todos los empaques que estan en el lote del detalle de orden
-    orderDetailPackingRepository.deleteByOrderProductDetail(orderProductDetailFound);
 
-    //Creamos el OrderDetailPacking de todos los paquetes por lote que creamos
-    Double amountTotal = this.registerBatchOfOrderDetailByPackage(orderProductDetailDto,
-        orderProductDetailFound);
-
-    // Verificamos si el total del detalle es igual a la cantidad de paquetes por lote
-    this.checkIfTotalQuantityIsEqualToQuantityBatch(amountTotal, orderProductDetailDto);
 
     return orderProductDetailRepository.save(orderProductDetailFound);
   }
@@ -146,8 +118,6 @@ public class OrderProductDetailServiceImpl implements
     OrderProductDetail orderProductDetail = this.findOrderProductDetailById(id);
     orderProductDetailRepository.delete(orderProductDetail);
 
-    // Eliminamos todos los empaques que estan en el lote del detalle de orden
-    orderDetailPackingRepository.deleteByOrderProductDetail(orderProductDetail);
   }
 
   @Override
@@ -204,12 +174,6 @@ public class OrderProductDetailServiceImpl implements
     }
   }
 
-  private Packing findPackingById(Integer packingId) {
-    return packingRepository.findByIdAndActiveIsTrue(packingId).orElseThrow(
-        errorEntityNotFound(Packing.class, packingId)
-    );
-  }
-
   private Product findProductById(Integer productId) {
 
     return productRepository.findByIdAndActiveIsTrue(productId).orElseThrow(
@@ -235,99 +199,7 @@ public class OrderProductDetailServiceImpl implements
     }
   }
 
-  /**
-   * Creamos el OrderDetailPacking de todos los paquetes por lote que creamos
-   *
-   * @param orderProductDetailDto Los paquetes por detalle del lote
-   * @param orderProductDetail    El detalle de orden
-   * @return La cantidad de productos registrados en el lote
-   */
-  private Double registerBatchOfOrderDetailByPackage(OrderProductDetailDto orderProductDetailDto,
-      OrderProductDetail orderProductDetail) {
-
-    double amountTotal = Double.parseDouble("0");
-
-    // Verificamos si se envia el DTO (OrderDetailPackingDtos) si no se envia entra aqui para crear uno por defecto
-    if (orderProductDetailDto.getOrderDetailPackingDtos() == null) {
-
-      // Obtenemos el Empaque por defecto cuando no se envia un empaque
-      Optional<Packing> packing = packingRepository.findByCodeAndActiveTrue(
-          PackingCodeEnum.NA.getCode());
-
-      // validamos que exista el empaque por defecto
-      if (packing.isEmpty()) {
-        errorProcess("El código " + PackingCodeEnum.NA.getCode() + " no existe");
-      }
-
-      String codeRandom = getCodeRandom();
-
-      List<OrderDetailPackingDto> orderDetailPackingDtos = new ArrayList<>();
-
-      OrderDetailPackingDto orderDetailPackingDto = new OrderDetailPackingDto();
-      orderDetailPackingDto.setPackingId(packing.get().getId());
-      orderDetailPackingDto.setCode(codeRandom);
-      orderDetailPackingDto.setAmount(orderProductDetail.getAmount());
-      orderDetailPackingDto.setExpirationDate(null);
-
-      orderDetailPackingDtos.add(orderDetailPackingDto);
-
-      orderProductDetailDto.setOrderDetailPackingDtos(orderDetailPackingDtos);
-    }
-
-    // Recorremos todos los (OrderDetailPackingDto) que nos envian de un producto
-    for (OrderDetailPackingDto orderDetailPackingDto : orderProductDetailDto.getOrderDetailPackingDtos()) {
 
 
-
-      // Obtenemos la entidad de empaque
-      Packing packing = this.findPackingById(orderDetailPackingDto.getPackingId());
-
-      // Verificamos que la cantidad enviada en (OrderDetailPackingDto) sea igual o menos a la cantidad que soporta el empaque
-      if (packing.getAmount() < orderDetailPackingDto.getAmount() && packing.getAmount() > 0) {
-        errorProcess(String.format(
-                "El empaque (%s) con fecha de vencimiento (%s) solo puede contener maximo (%s) y se envio (%s)",
-                packing.getName(), orderDetailPackingDto.getExpirationDate(),
-                packing.getAmount(), orderDetailPackingDto.getAmount())
-        );
-      }
-
-      // Creamos la entidad (OrderDetailPacking)
-      OrderDetailPacking orderDetailPacking = new OrderDetailPacking();
-      // Editamos la entidad nueva con el codigo y si no se envia el codigo lo pone como vacio
-      orderDetailPacking.setCode(
-          (orderDetailPackingDto.getCode() == null) ? "" : orderDetailPackingDto.getCode()
-      );
-      orderDetailPacking.setOrderProductDetail(orderProductDetail);
-      orderDetailPacking.setAmount(orderDetailPackingDto.getAmount());
-      orderDetailPacking.setExpirationDate(orderDetailPackingDto.getExpirationDate());
-      orderDetailPacking.setPacking(packing);
-      if (orderDetailPackingDto.getPackingProductId() != null) {
-        orderDetailPacking.setPackingProduct(
-            this.findPackingProductById(orderDetailPackingDto.getPackingProductId())
-        );
-      }
-      orderDetailPackingRepository.save(orderDetailPacking);
-      amountTotal = amountTotal + orderDetailPackingDto.getAmount();
-    }
-
-    return amountTotal;
-
-  }
-
-  private static String getCodeRandom() {
-    return String.valueOf(LocalDateTime.now().getYear()) +
-            String.valueOf(LocalDateTime.now().getMonthValue()) +
-            String.valueOf(LocalDateTime.now().getDayOfMonth()) +
-            String.valueOf(LocalDateTime.now().getHour()) +
-            String.valueOf(LocalDateTime.now().getMinute()) +
-            String.valueOf(LocalDateTime.now().getSecond()) +
-            String.valueOf(LocalDateTime.now().getNano());
-  }
-
-  private PackingProduct findPackingProductById(Integer id) {
-    return packingProductRepository.findByIdAndActiveIsTrue(id).orElseThrow(
-        errorEntityNotFound(PackingProduct.class, id)
-    );
-  }
 
 }

@@ -35,8 +35,6 @@ public class OrderProductServiceImpl implements
       OrderProduct.class);
   private final OrderProductDetailRepository orderProductDetailRepository;
   private final StockRepository stockRepository;
-  private final OrderDetailPackingRepository orderDetailPackingRepository;
-  private final PackingProductRepository packingProductRepository;
   private final SupplierRepository supplierRepository;
 
   @Override
@@ -186,87 +184,11 @@ public class OrderProductServiceImpl implements
       stock.setAmountInStock(newAmountStock);
       stockRepository.save(stock);
 
-      //En caso se sea un ingreso a almacen
-      if (Objects.equals(orderProduct.getOrderProductType().getAction(),
-          OrderProductTypeActionEnum.RECEIPT.name())) {
-        this.copyDataOrderDetailPackingToPackingProduct(orderProductDetail, stock);
-      }
-
-      //En caso se sea una salida de almacen
-      if (Objects.equals(orderProduct.getOrderProductType().getAction(),
-          OrderProductTypeActionEnum.DISPATCH.name())) {
-        this.subtractDataOrderDetailPackingToPackingProduct(orderProductDetail, stock);
-      }
-
     }
 
     orderProduct.setStatus(StatusFlowEnum.FINALIZADO.name());
     return orderProductRepository.save(orderProduct);
 
-  }
-
-
-  private void copyDataOrderDetailPackingToPackingProduct(OrderProductDetail orderProductDetail,
-      Stock stock) {
-    // Obteneoms de un detalle especifico todos los pedidos por paquetes
-    List<OrderDetailPacking> orderDetailPackings =
-        orderDetailPackingRepository.findByOrderProductDetail_IdAndActiveTrue(
-            orderProductDetail.getId());
-
-    PackingProduct packingProductNew = new PackingProduct();
-
-    //Recorremos todos los paquetes que se ordenaron para el ingreso
-    for (OrderDetailPacking orderDetailPacking : orderDetailPackings) {
-      PackingProduct packingProduct = new PackingProduct();
-      packingProduct.setCode(orderDetailPacking.getCode());
-      packingProduct.setExpirationDate(orderDetailPacking.getExpirationDate());
-      packingProduct.setAmount(orderDetailPacking.getAmount());
-      packingProduct.setPacking(orderDetailPacking.getPacking());
-      packingProduct.setStock(stock);
-      packingProductNew = packingProductRepository.save(packingProduct);
-
-      orderDetailPacking.setPackingProduct(packingProductNew);
-      orderDetailPackingRepository.save(orderDetailPacking);
-
-    }
-  }
-
-  private void subtractDataOrderDetailPackingToPackingProduct(OrderProductDetail orderProductDetail,
-      Stock stock) {
-    // Obteneoms de un detalle especifico todos los pedidos por paquetes
-    List<OrderDetailPacking> orderDetailPackings =
-        orderDetailPackingRepository.findByOrderProductDetail_IdAndActiveTrue(
-            orderProductDetail.getId());
-
-    PackingProduct packingProductNew = new PackingProduct();
-
-    //Recorremos todos los paquetes que se ordenaron para la salida
-    for (OrderDetailPacking orderDetailPacking : orderDetailPackings) {
-
-      //Buscamos el empaque del producto para restar a tu cantidad
-      PackingProduct packingProduct = this.findPackingProductById(
-          orderDetailPacking.getPackingProduct().getId());
-      double newAmount = packingProduct.getAmount() - orderDetailPacking.getAmount();
-      if (newAmount >= 0) {
-        packingProduct.setAmount(newAmount);
-      } else {
-        errorProcess(String.format(
-            "El producto (%s con codigo de empaque '%s') tiene un saldo disponible de (%s) y no puede despachar la cantidad de (%s) solicitada",
-            packingProduct.getStock().getProduct().getName(),
-            orderDetailPacking.getCode(),
-            packingProduct.getAmount(),
-            orderDetailPacking.getAmount())
-        );
-      }
-      packingProductRepository.save(packingProduct);
-
-    }
-  }
-
-  private PackingProduct findPackingProductById(Integer id) {
-    return packingProductRepository.findByIdAndActiveIsTrue(id).orElseThrow(
-        errorEntityNotFound(PackingProduct.class, id)
-    );
   }
 
   private OrderProduct findOrderProductById(Integer id) {

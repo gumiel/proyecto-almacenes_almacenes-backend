@@ -3,6 +3,8 @@ package com.gestion.almacenes.dtos;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
+
+import java.time.LocalDate;
 import java.util.List;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -30,7 +32,10 @@ public class OrderProductDetailDto {
   @Schema(description = "Relacionador que identifica la orden de producto")
   private Integer orderProductId;
 
-  @Schema(description = "Lista de las ordenes por paquete.")
-  List<OrderDetailPackingDto> orderDetailPackingDtos;
+  @Schema(description = "Codigo del producto que ingresa o sale de almacen")
+  private String codeProduct;
+
+  @Schema(description = "Fecha de expiración del producto que ingresa o sale de almacen")
+  private LocalDate expirationDateProduct;
 
 }
