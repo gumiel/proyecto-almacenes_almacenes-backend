@@ -25,8 +25,13 @@ public class ExceptionsCustom {
   }
 
 
-  public static Supplier<? extends RuntimeException> errorEntityNotFound(Class<?> data,
+  public static void errorEntityNotFoundInLine(Class<?> data,
       Integer id) {
+    throw new EntityNotFound(data.getSimpleName(), id);
+  }
+
+  public static Supplier<? extends RuntimeException> errorEntityNotFound(Class<?> data,
+                                                                         Integer id) {
     return () -> new EntityNotFound(data.getSimpleName(), id);
   }
 

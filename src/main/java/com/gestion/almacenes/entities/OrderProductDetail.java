@@ -15,6 +15,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDate;
+
 /**
  * Detalle de ordenes
  */
@@ -42,5 +44,9 @@ public class OrderProductDetail extends Auditable {
 
   @Column(columnDefinition = "NUMERIC(18, 4)")
   private Double amount;
+
+  private String codeProduct;
+
+  private LocalDate expirationDateProduct;
 
 }

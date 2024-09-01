@@ -3,13 +3,17 @@ package com.gestion.almacenes.servicesImpls;
 import com.gestion.almacenes.commons.util.GenericMapper;
 import com.gestion.almacenes.commons.util.PagePojo;
 import com.gestion.almacenes.dtos.ProductDto;
+import com.gestion.almacenes.entities.CatalogProductStorehouse;
 import com.gestion.almacenes.entities.Product;
+import com.gestion.almacenes.entities.Storehouse;
 import com.gestion.almacenes.entities.UnitMeasurement;
 import com.gestion.almacenes.mappers.ProductMapper;
+import com.gestion.almacenes.repositories.CatalogProductStorehouseRepository;
 import com.gestion.almacenes.repositories.ProductRepository;
+import com.gestion.almacenes.repositories.StorehouseRepository;
 import com.gestion.almacenes.repositories.UnitMeasurementRepository;
 import com.gestion.almacenes.services.ProductService;
-import java.util.List;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -17,8 +21,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static com.gestion.almacenes.servicesImpls.ExceptionsCustom.*;
 
+@Transactional
 @Service
 @AllArgsConstructor
 public class ProductServiceImpl implements
@@ -29,6 +37,8 @@ public class ProductServiceImpl implements
   private final UnitMeasurementRepository unitMeasurementRepository;
   private final GenericMapper<Product, ProductDto> genericMapper = new GenericMapper<>(
       Product.class);
+  private final StorehouseRepository storehouseRepository;
+  private final CatalogProductStorehouseRepository catalogProductStorehouseRepository;
 
   @Override
   public List<Product> getAll() {
@@ -47,7 +57,31 @@ public class ProductServiceImpl implements
         this.findUnitMeasurementById(
             productdto.getUnitMeasurementId())
     );
-    return productRepository.save(product);
+
+    Product productNew = productRepository.save(product);
+
+
+
+    if(productdto.getSelectAllStorehouse()){
+
+      for(Storehouse storehouse: storehouseRepository.findByActiveTrue()){
+        this.createCatalogProductStorehouse(productNew, storehouse);
+      }
+
+    }else{
+      if(productdto.getStorehouseIds()!=null) {
+        for (Integer storehouseId : productdto.getStorehouseIds()) {
+          Storehouse storehouse = storehouseRepository.findByIdAndActiveIsTrue(storehouseId).orElseThrow(
+                  errorEntityNotFound(Storehouse.class, storehouseId)
+          );
+          this.createCatalogProductStorehouse(productNew, storehouse);
+        }
+      }else{
+        errorProcess("La lista de almacenes esta vacía.");
+      }
+    }
+
+    return productNew;
   }
 
 
@@ -63,8 +97,47 @@ public class ProductServiceImpl implements
         this.findUnitMeasurementById(
             productdto.getUnitMeasurementId())
     );
-    return productRepository.save(product);
+    Product productEdited = productRepository.save(product);
+
+
+
+    if(productdto.getSelectAllStorehouse()){
+
+      List<Integer> storehouseIdsNotId = catalogProductStorehouseRepository.findStorehouseIdNotInByProductId(productEdited.getId());
+      for(Integer storehouseId: storehouseIdsNotId){
+        Storehouse storehouse = this.findStorehouseById(storehouseId);
+        this.createCatalogProductStorehouse(productEdited, storehouse);
+      }
+
+    }else{
+
+      List<Integer> storehouseIds = catalogProductStorehouseRepository.findStorehouseIdByProductId(productEdited.getId());
+
+      // Crear una copia de las listas para no modificar las originales
+      List<Integer> toDeleteStorehouse  = new ArrayList<>(storehouseIds);
+      List<Integer> toCreateStorehouse  = new ArrayList<>(productdto.getStorehouseIds());
+
+      toDeleteStorehouse.removeAll(productdto.getStorehouseIds());
+
+      for(Integer storehouseId: toDeleteStorehouse){
+        Storehouse storehouse = this.findStorehouseById(storehouseId);
+        catalogProductStorehouseRepository.deleteByStorehouseAndProduct(storehouse, productEdited);
+      }
+
+      toCreateStorehouse.removeAll(storehouseIds);
+
+      for(Integer storehouseId: toCreateStorehouse){
+        Storehouse storehouse = this.findStorehouseById(storehouseId);
+        this.createCatalogProductStorehouse(productEdited, storehouse);
+      }
+
+    }
+
+    return productEdited;
+
   }
+
+
 
   @Override
   public Product getById(Integer id) {
@@ -110,6 +183,19 @@ public class ProductServiceImpl implements
   private UnitMeasurement findUnitMeasurementById(Integer unitMeasurementId) {
     return unitMeasurementRepository.findByIdAndActiveIsTrue(unitMeasurementId).orElseThrow(
         errorEntityNotFound(UnitMeasurement.class, unitMeasurementId)
+    );
+  }
+
+  private void createCatalogProductStorehouse(Product productEdited, Storehouse storehouse) {
+    CatalogProductStorehouse catalogProductStorehouse = new CatalogProductStorehouse();
+    catalogProductStorehouse.setProduct(productEdited);
+    catalogProductStorehouse.setStorehouse(storehouse);
+    catalogProductStorehouseRepository.save(catalogProductStorehouse);
+  }
+
+  private Storehouse findStorehouseById(Integer storehouseId) {
+    return storehouseRepository.findById(storehouseId).orElseThrow(
+            errorEntityNotFound(Storehouse.class, storehouseId)
     );
   }
 

@@ -1,19 +1,45 @@
 stages:
-  - prueba
+  - compile
+  - deploy
 
-job_1:
-  stage: prueba
+#variables:
+#  URL_DB: ${URL_DB}
+#  USER_DB: $USER_DB
+#  PASS_DB: ${PASS_DB}
+
+compile_test:
+  stage: compile
   tags:
-    - ubuntu-root
+    - dos
   script:
-    - echo "hola"
-    - docker stop almacenes-container
-    - docker rm almacenes-container
-    - docker rmi spring-api-image
-    - docker build -t "spring-api-image" .
-    - docker compose up -d
-#    - mvn dependency:go-offline
-#    - mvn clean install -DskipTests
+    - mvn dependency:go-offline
+    - mvn clean install -DskipTests
+
+deploy_production:
+  stage: deploy
+  tags:
+    - digitalocean
+  script:
+#    - echo "Conectando a (${URL_DB}) con usuario ($USER_DB) y clave ($PASS_DB)."
+#    - docker stop almacenes-container
+#    - docker rm almacenes-container
+#    - docker rmi spring-api-image
+#    - docker build -t "spring-api-image" .
+#    - docker compose up -d
+#    - pkill -f almacenes-0.0.1-SNAPSHOT.jar
+#    - $variable=$(ps aux | grep almacenes-0.0.1-SNAPSHOT.jar | grep -v grep | awk '{print $2}')
+#    - kill $variable
+    - mvn dependency:go-offline
+    - mvn clean install -DskipTests
+    - chmod 777 -R ejecutar_almacenes.sh
+    - ./ejecutar_almacenes.sh
+#    - java -jar ./target/almacenes-0.0.1-SNAPSHOT.jar --spring.profiles.active=production
 #    - docker stop almacenes-container
 #    - docker rm almacenes-container
 #    - docker run -d -p 8081:8081 --name almacenes-container almacenes-app
+  artifacts:
+    name: "almacenes-0.0.1-SNAPSHOT.jar"
+    paths:
+      - ./target/almacenes-0.0.1-SNAPSHOT.jar
+  only:
+    - develop

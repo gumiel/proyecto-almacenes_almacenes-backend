@@ -19,6 +19,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import static com.gestion.almacenes.servicesImpls.ExceptionsCustom.errorEntityNotFound;
+import static com.gestion.almacenes.servicesImpls.ExceptionsCustom.errorProcess;
 
 @Service
 @AllArgsConstructor
@@ -40,7 +41,7 @@ public class StockServiceImpl implements
 
     if (stockRepository.existsByStorehouse_IdAndProduct_IdAndActiveTrue(stockdto.getStorehouseId(),
         stockdto.getProductId())) {
-      errorEntityNotFound(Stock.class, stockdto.getStorehouseId());
+      errorProcess("Ya existe el Stock que desea ingresar.");
     }
 
     Storehouse storehouse = this.findStorehouseById(stockdto.getStorehouseId());
@@ -96,6 +97,11 @@ public class StockServiceImpl implements
     Page<Stock> stockPage = stockRepository.findAll(pageable);
 
     return genericMapper.fromEntity(stockPage);
+  }
+
+  @Override
+  public Stock getStockByStorehouseIdAndProductId(Integer storehouseId, Integer productId) {
+    return stockRepository.findByStorehouse_IdAndProduct_IdAndActiveTrue(storehouseId, productId).orElseThrow();
   }
 
   private Stock findStockById(Integer id) {

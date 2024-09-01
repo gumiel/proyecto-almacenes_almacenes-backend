@@ -9,6 +9,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface StorehouseRepository extends JpaRepository<Storehouse, Integer> {
+
   boolean existsByCodeAndActiveIsTrue(String code);
 
   boolean existsByCodeAndIdNotAndActiveIsTrue(String code, Integer id);
@@ -20,4 +21,11 @@ public interface StorehouseRepository extends JpaRepository<Storehouse, Integer>
   List<Storehouse> findAll(Specification<Storehouse> spec);
 
   Page<Storehouse> findAll(Specification<Storehouse> spec, Pageable pageable);
+
+  /**
+   * Devuelve una lista de Almacenes activos
+   * @return Lista de almacenes activos
+   */
+  List<Storehouse> findByActiveTrue();
+
 }

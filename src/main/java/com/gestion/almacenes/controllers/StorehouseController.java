@@ -1,8 +1,7 @@
 package com.gestion.almacenes.controllers;
 
 import com.gestion.almacenes.commons.util.PagePojo;
-import com.gestion.almacenes.dtos.StoreHouseDto;
-import com.gestion.almacenes.dtos.StorehouseProductDto;
+import com.gestion.almacenes.dtos.StorehouseDto;
 import com.gestion.almacenes.entities.Storehouse;
 import com.gestion.almacenes.services.StorehouseService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -39,7 +38,7 @@ public class StorehouseController {
 
   @PostMapping
   @Operation(summary = "Creación del registro")
-  public ResponseEntity<Storehouse> create(@Valid @RequestBody StoreHouseDto dto) {
+  public ResponseEntity<Storehouse> create(@Valid @RequestBody StorehouseDto dto) {
     Storehouse storeHouseSaved = storehouseService.create(dto);
     return ResponseEntity.status(HttpStatus.CREATED).body(storeHouseSaved);
   }
@@ -47,7 +46,7 @@ public class StorehouseController {
   @PutMapping("/{id}")
   @Operation(summary = "Edición del registro")
   public ResponseEntity<Storehouse> update(@PathVariable Integer id,
-      @Valid @RequestBody StoreHouseDto dto) {
+      @Valid @RequestBody StorehouseDto dto) {
     Storehouse storeHouseUpdated = storehouseService.update(id, dto);
     return ResponseEntity.status(HttpStatus.CREATED).body(storeHouseUpdated);
   }
@@ -97,22 +96,6 @@ public class StorehouseController {
         sortField, sortOrder, code, name);
 
     return ResponseEntity.status(HttpStatus.OK).body(storeHousePagePojoFiltered);
-  }
-
-  @Operation(summary = "Relacionar un producto con un almancen")
-  @PostMapping("/addProductToStorehouse")
-  public ResponseEntity<Storehouse> addProductToStorehouse(
-      @Valid @RequestBody StorehouseProductDto dto) {
-    Storehouse storehouseSaved = storehouseService.addProductToStorehouse(dto);
-    return ResponseEntity.status(HttpStatus.CREATED).body(storehouseSaved);
-  }
-
-  @Operation(summary = "Eliminar relacion de un producto con un almancen")
-  @DeleteMapping("/removeProductToStorehouse")
-  public ResponseEntity<Storehouse> removeProductToStorehouse(
-      @Valid @RequestBody StorehouseProductDto dto) {
-    storehouseService.removeProductToStorehouse(dto);
-    return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
   }
 
 }

@@ -2,11 +2,8 @@ package com.gestion.almacenes.servicesImpls;
 
 import com.gestion.almacenes.commons.util.GenericMapper;
 import com.gestion.almacenes.commons.util.PagePojo;
-import com.gestion.almacenes.dtos.StoreHouseDto;
-import com.gestion.almacenes.dtos.StorehouseProductDto;
-import com.gestion.almacenes.entities.Product;
+import com.gestion.almacenes.dtos.StorehouseDto;
 import com.gestion.almacenes.entities.Storehouse;
-import com.gestion.almacenes.entities.StorehouseProduct;
 import com.gestion.almacenes.entities.StorehouseType;
 import com.gestion.almacenes.repositories.ProductRepository;
 import com.gestion.almacenes.repositories.StorehouseProductRepository;
@@ -32,7 +29,7 @@ public class StorehouseServiceImpl implements
 
   private final StorehouseRepository storehouseRepository;
   private final ModelMapper modelMapper = new ModelMapper();
-  private final GenericMapper<Storehouse, StoreHouseDto> genericMapper = new GenericMapper<>(
+  private final GenericMapper<Storehouse, StorehouseDto> genericMapper = new GenericMapper<>(
       Storehouse.class);
   private final StorehouseProductRepository storehouseProductRepository;
   private final ProductRepository productRepository;
@@ -44,10 +41,10 @@ public class StorehouseServiceImpl implements
   }
 
   @Override
-  public Storehouse create(StoreHouseDto storeHousedto) {
+  public Storehouse create(StorehouseDto storeHousedto) {
 
     if (storehouseRepository.existsByCodeAndActiveIsTrue(storeHousedto.getCode())) {
-      errorDuplicateInFieldCode(StoreHouseDto.class, "code", storeHousedto.getCode());
+      errorDuplicateInFieldCode(StorehouseDto.class, "code", storeHousedto.getCode());
 
     }
 
@@ -67,11 +64,11 @@ public class StorehouseServiceImpl implements
   }
 
   @Override
-  public Storehouse update(Integer id, StoreHouseDto storeHousedto) {
+  public Storehouse update(Integer id, StorehouseDto storeHousedto) {
     Storehouse storehouseFound = this.findStoreHouseById(id);
     if (storehouseRepository.existsByCodeAndIdNotAndActiveIsTrue(storeHousedto.getCode(),
         storehouseFound.getId())) {
-      errorDuplicateInFieldCode(StoreHouseDto.class, "code", storeHousedto.getCode());
+      errorDuplicateInFieldCode(StorehouseDto.class, "code", storeHousedto.getCode());
     }
 
     storehouseFound = genericMapper.fromDto(storeHousedto);
@@ -134,33 +131,7 @@ public class StorehouseServiceImpl implements
     );
   }
 
-  @Override
-  public Storehouse addProductToStorehouse(StorehouseProductDto dto) {
 
-    if (storehouseProductRepository.existsByStorehouseId_IdAndProductId_Id(dto.getStorehouseId(),
-        dto.getProductId())) {
-      errorDuplicate(StorehouseProduct.class, "Almacen",
-          dto.getStorehouseId().toString());
-    }
 
-    StorehouseProduct storehouseProduct = new StorehouseProduct();
-    storehouseProduct.setStorehouseId(this.findStoreHouseById(dto.getStorehouseId()));
-    storehouseProduct.setProduct(this.findProductById(dto.getProductId()));
-    storehouseProductRepository.save(storehouseProduct);
-    return null;
-  }
-
-  @Override
-  public void removeProductToStorehouse(StorehouseProductDto dto) {
-    StorehouseProduct storehouseProduct = storehouseProductRepository.findByStorehouseId_IdAndProductId_Id(
-        dto.getStorehouseId(), dto.getProductId());
-    storehouseProductRepository.delete(storehouseProduct);
-  }
-
-  private Product findProductById(Integer id) {
-    return productRepository.findByIdAndActiveIsTrue(id).orElseThrow(
-        errorEntityNotFound(Product.class, id)
-    );
-  }
 
 }

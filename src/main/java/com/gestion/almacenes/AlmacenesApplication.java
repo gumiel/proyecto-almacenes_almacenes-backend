@@ -19,6 +19,7 @@ public class AlmacenesApplication {
     System.out.println("--------------------------------------");
     System.out.println("http://localhost:8081/storehouse/v1/doc/swagger-ui/index.html");
     System.out.println("https://service-storehouse-production.onrender.com/storehouse/v1/doc/swagger-ui/index.html");
+    System.out.println("http://206.189.237.209:8081/storehouse/v1/doc/swagger-ui/index.html");
   }
 
   @Bean
@@ -29,7 +30,7 @@ public class AlmacenesApplication {
                 .title("Documentación de API-REST de la GESTION DE ALMACENES")
                 .version("1.0")
                 .description(
-                    "Esta es una pequeña documentacion para los endpoints del programa de Gestion de almacenes")
+                    "Esta es una pequeña documentación para los endpoints del programa de Gestión de almacenes")
         );
   }
 

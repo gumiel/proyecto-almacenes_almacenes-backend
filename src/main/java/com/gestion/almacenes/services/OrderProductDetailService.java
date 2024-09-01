@@ -22,4 +22,6 @@ public interface OrderProductDetailService {
 
   PagePojo<OrderProductDetail> getByPageAndFilters(Integer page, Integer size, String sortField,
       String sortOrder, String code, String name);
+
+    void createList(List<OrderProductDetailDto> orderProductDetailDtos);
 }

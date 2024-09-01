@@ -1,7 +1,7 @@
 package com.gestion.almacenes.mappers;
 
 import com.gestion.almacenes.commons.util.PagePojo;
-import com.gestion.almacenes.dtos.StoreHouseDto;
+import com.gestion.almacenes.dtos.StorehouseDto;
 import com.gestion.almacenes.entities.Storehouse;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class StoreHouseMapper {
 
-  public Storehouse fromDto(StoreHouseDto dto, Storehouse storeHouseFound) {
+  public Storehouse fromDto(StorehouseDto dto, Storehouse storeHouseFound) {
     Storehouse storeHouse = new Storehouse();
     if (storeHouseFound != null) {
       storeHouse = storeHouseFound;

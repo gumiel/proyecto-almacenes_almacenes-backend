@@ -13,6 +13,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDate;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -30,6 +32,7 @@ public class Product extends Auditable {
   private String name;
   @Column(length = 500, nullable = false)
   private String description;
+
 
   @ManyToOne
   @JoinColumn(columnDefinition = "unit_measurement_id")

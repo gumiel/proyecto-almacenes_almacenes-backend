@@ -57,6 +57,15 @@ public class StockController {
     return ResponseEntity.status(HttpStatus.OK).body(stock);
   }
 
+  @Operation(summary = "Obtención del stock segun el identificador de producto y almacen")
+  @GetMapping("/getStockByStorehouseIdAndProductId")
+  public ResponseEntity<Stock> getStockByStorehouseIdAndProductId(
+          @RequestParam(defaultValue = "0") int storehouseId,
+          @RequestParam(defaultValue = "0") int productId ) {
+    Stock stock = stockService.getStockByStorehouseIdAndProductId(storehouseId, productId);
+    return ResponseEntity.status(HttpStatus.OK).body(stock);
+  }
+
   @Operation(summary = "Eliminación del registro por el identificador")
   @DeleteMapping("/{id}")
   public ResponseEntity<Void> delete(@PathVariable Integer id) {
